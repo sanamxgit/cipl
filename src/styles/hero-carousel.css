@@ -1,0 +1,40 @@
+.hero-carousel {
+    height: 600px;
+}
+
+.carousel-slide {
+    height: 600px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.carousel-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    width: 80%;
+    max-width: 1200px;
+}
+
+.product-card {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    margin: 20px auto;
+    color: #333;
+}
+
+.product-card img {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 10px;
+}
+
+.product-card button {
+    margin-top: 15px;
+} 

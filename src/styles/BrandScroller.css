@@ -1,0 +1,261 @@
+/* Brand section */
+.brands-section {
+    margin: 40px 0;
+    padding: 20px 0;
+    background: #f8f9fa;
+}
+
+.brands-scroller {
+    position: relative;
+    width: 100%;
+    padding: 20px 0;
+}
+
+.brands-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    gap: 20px;
+    padding: 10px;
+    margin: 0 -10px;
+}
+
+.brand-logo-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 180px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    margin: 10px 0;
+}
+
+.brand-logo-card:hover,
+.brand-logo-card.active {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-color: #0056b3;
+}
+
+.brand-logo {
+    width: auto;
+    max-width: 90% !important;
+    max-height: 140px !important;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.brand-logo-card:hover .brand-logo {
+    transform: scale(1.1);
+}
+
+/* Products section */
+.products-section {
+    padding: 60px 0;
+}
+
+.products-section h3 {
+    margin-bottom: 30px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* Product card styles */
+.product-card {
+  border: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  height: auto;
+  width: 340px;
+  margin: 0 auto 20px;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-card .card-img-top {
+  height: 200px;
+  width: 100%;
+  object-fit: contain;
+  padding: 20px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-card .card-img-top {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.product-card:hover .card-img-top img {
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+
+.product-card .card-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  height: 220px;
+}
+
+.product-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+.product-card .card-text {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  min-height: 60px;
+  height: 60px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+/* Button container */
+.product-card .btn-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.product-card .btn-primary {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  flex: 2;
+}
+
+.product-card .btn-outline-primary {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  flex: 1;
+}
+
+.price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #0056b3;
+}
+
+/* Hide scrollbar but keep functionality */
+.brands-container::-webkit-scrollbar {
+    height: 0;
+    width: 0;
+}
+
+.brands-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .brand-logo-card {
+        height: 150px !important;
+    }
+
+    .brand-logo {
+        max-height: 50px;
+    }
+
+    .product-card .card-img-top {
+        height: 150px;
+    }
+} 
+
+/* Update the grid column sizes */
+@media (min-width: 768px) {
+  .brand-products .col-md-4 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}
+
+@media (min-width: 992px) {
+  .brand-products .col-lg-3 {
+    flex: 0 0 auto;
+    width: 33.333333%;
+  }
+} 
+
+/* Brand grid container */
+.brands-grid {
+  position: relative;
+  overflow: hidden;
+  padding: 0 50px; /* Space for arrows */
+  margin: 20px 0; /* Add margin for hover space */
+  min-height: 240px; /* Increased height to accommodate hover effect */
+}
+
+.brands-grid .row {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 20px 0; /* Add padding to prevent cut-off */
+}
+
+.brands-grid .row::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Navigation arrows */
+.scroll-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.scroll-arrow:hover {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.scroll-arrow.left {
+  left: 0;
+}
+
+.scroll-arrow.right {
+  right: 0;
+}
+
+.scroll-arrow i {
+  color: #333;
+  font-size: 1.2rem;
+}
+
+/* Adjust brand card width */
+.brands-grid .col {
+  flex: 0 0 auto;
+  width: 280px !important;
+  padding: 0 20px;
+} 
