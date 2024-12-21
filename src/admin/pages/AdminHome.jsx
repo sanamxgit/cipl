@@ -7,7 +7,6 @@ const AdminHome = () => {
   const [slides, setSlides] = useState([]);
   const [selectedSlide, setSelectedSlide] = useState(null);
   const [editMode, setEditMode] = useState(false);
-
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -24,36 +23,41 @@ const AdminHome = () => {
     fetchSlides();
   }, []);
 
-  useEffect(() => {
-    const testCORS = async () => {
-      try {
-        const response = await axios.get('/backend/api/test.php', {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        });
-        console.log('CORS test response:', response.data);
-      } catch (error) {
-        console.error('CORS test error:', error);
-      }
-    };
-    testCORS();
-  }, []);
-
   const fetchSlides = async () => {
     try {
-      const response = await axios.get('/backend/api/carousel-slides.php', {
+      const response = await axios.get('/backend/api/carousel-slides.php');
+      if (response.data.status === 'success') {
+        setSlides(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching slides:', error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const endpoint = `/backend/api/carousel-slides.php${editMode ? `?id=${selectedSlide.id}` : ''}`;
+      const method = editMode ? 'put' : 'post';
+      
+      const response = await axios({
+        method,
+        url: endpoint,
+        data: formData,
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         }
       });
-      if (response.data && response.data.status === 'success') {
-        setSlides(response.data.data);
+
+      if (response.data.status === 'success') {
+        await fetchSlides();
+        resetForm();
+        alert(response.data.message);
       }
     } catch (error) {
-      console.error('Error fetching slides:', error);
+      console.error('Error saving slide:', error);
+      alert(error.response?.data?.message || 'Failed to save slide');
     }
   };
 
@@ -73,68 +77,14 @@ const AdminHome = () => {
     setEditMode(true);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-        const endpoint = `/backend/api/carousel-slides.php${editMode ? `?id=${selectedSlide.id}` : ''}`;
-        const method = editMode ? 'put' : 'post';
-        
-        console.log('Request details:', {
-            method,
-            endpoint,
-            formData,
-            editMode,
-            selectedSlideId: selectedSlide?.id
-        });
-
-        const response = await axios({
-            method,
-            url: endpoint,
-            data: formData,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        });
-
-        console.log('Complete response:', {
-            status: response.status,
-            statusText: response.statusText,
-            headers: response.headers,
-            data: response.data
-        });
-
-        if (response.data && response.data.status === 'success') {
-            await fetchSlides();
-            resetForm();
-            alert(response.data.message || (editMode ? 'Slide updated successfully!' : 'Slide added successfully!'));
-        } else {
-            console.error('Response indicates failure:', response.data);
-            throw new Error(response.data?.message || 'Operation failed');
-        }
-    } catch (error) {
-        console.error('Full error details:', {
-            message: error.message,
-            response: error.response,
-            request: error.request,
-            config: error.config
-        });
-        alert(error.response?.data?.message || error.message || 'Failed to save slide. Please try again.');
-    }
-  };
-
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this slide?')) {
       try {
-        await axios.delete(`/backend/api/carousel-slides.php?id=${id}`, {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        });
-        fetchSlides();
+        await axios.delete(`/backend/api/carousel-slides.php?id=${id}`);
+        await fetchSlides();
       } catch (error) {
         console.error('Error deleting slide:', error);
+        alert('Failed to delete slide');
       }
     }
   };
@@ -157,19 +107,29 @@ const AdminHome = () => {
 
   return (
     <Row>
-      {/* Live Preview */}
       <Col md={8}>
         <Card className="mb-4">
           <Card.Header>
             <h5 className="m-0">Live Preview</h5>
           </Card.Header>
           <Card.Body className="p-0">
-            <HeroCarousel />
+            <div className="carousel-preview-container">
+              <HeroCarousel slides={slides} />
+            </div>
           </Card.Body>
         </Card>
+
+        {/* Analytics Cards */}
+        <div className="analytics-cards">
+          {/* ... analytics cards ... */}
+        </div>
+
+        {/* Activity Log */}
+        <div className="activity-log">
+          {/* ... activity log ... */}
+        </div>
       </Col>
 
-      {/* Editor */}
       <Col md={4}>
         <Card>
           <Card.Header>
@@ -183,6 +143,7 @@ const AdminHome = () => {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  required
                 />
               </Form.Group>
 
@@ -192,6 +153,7 @@ const AdminHome = () => {
                   as="textarea"
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  required
                 />
               </Form.Group>
 
@@ -201,6 +163,7 @@ const AdminHome = () => {
                   type="text"
                   value={formData.image_url}
                   onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                  required
                 />
               </Form.Group>
 

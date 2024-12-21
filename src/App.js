@@ -11,6 +11,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/hero-carousel.css';
 import './styles/navigation.css';
 import BrandScroller from './components/BrandScroller';
+import VideoSection from './components/VideoSection';
+import VideoManager from './admin/pages/VideoManager';
+import FeaturedManager from './admin/pages/FeaturedManager';
+import FeaturedProducts from './components/FeaturedProducts';
 
 const ProtectedRoute = ({ children }) => {
   if (!isAuthenticated()) {
@@ -27,10 +31,19 @@ function App() {
           <>
             <Navigation />
             <HeroCarousel />
-            <div className="container mt-5">
-              <h2 className="text-center mb-5">Our Products</h2>
+            <div className="container" style={{ marginTop: '160px' }}>
+              <h2 className="text-center mb-4" style={{ 
+                fontSize: '2.2rem',
+                fontWeight: '600',
+                color: '#333'
+              }}>
+                Our Products
+              </h2>
               <BrandScroller />
             </div>
+            <VideoSection />
+            <div style={{ marginBottom: '40px' }}></div>
+            <FeaturedProducts />
           </>
         } />
         <Route path="/admin/*" element={
@@ -38,8 +51,11 @@ function App() {
             <AdminLayout>
               <Routes>
                 <Route index element={<AdminHome />} />
+                <Route path="carousels" element={<AdminHome />} />
                 <Route path="brands" element={<BrandsManager />} />
                 <Route path="products" element={<ProductsManager />} />
+                <Route path="video" element={<VideoManager />} />
+                <Route path="featured" element={<FeaturedManager />} />
               </Routes>
             </AdminLayout>
           </ProtectedRoute>

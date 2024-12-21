@@ -9,6 +9,7 @@
   overflow-x: auto;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  margin-top: 100px;
   gap: 20px;
   padding: 10px;
 }

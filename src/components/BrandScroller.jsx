@@ -7,12 +7,19 @@ const BrandScroller = () => {
   const [brands, setBrands] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [products, setProducts] = useState([]);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
 
   const scrollRef = useRef(null);
 
   useEffect(() => {
     fetchBrands();
   }, []);
+
+  useEffect(() => {
+    if (brands.length > 0 && !selectedBrand) {
+      setSelectedBrand(brands[0]);
+    }
+  }, [brands]);
 
   useEffect(() => {
     if (selectedBrand) {
@@ -55,20 +62,31 @@ const BrandScroller = () => {
     }
   };
 
+  const handleScroll = (e) => {
+    const container = e.target;
+    setShowLeftArrow(container.scrollLeft > 0);
+  };
+
   return (
     <div className="products-section">
       <Container>
         {/* Brand Logos */}
         <div className="brands-grid mb-5">
-          <button 
-            className="scroll-arrow left" 
-            onClick={() => scroll('left')}
-            aria-label="Scroll left"
-          >
-            <i className="fas fa-chevron-left"></i>
-          </button>
+          {showLeftArrow && (
+            <button 
+              className="scroll-arrow left" 
+              onClick={() => scroll('left')}
+              aria-label="Scroll left"
+            >
+              <i className="fas fa-chevron-left"></i>
+            </button>
+          )}
           
-          <Row className="g-4" ref={scrollRef}>
+          <Row 
+            className="g-4" 
+            ref={scrollRef}
+            onScroll={handleScroll}
+          >
             {brands.map((brand) => (
               <Col key={brand.id}>
                 <Card 

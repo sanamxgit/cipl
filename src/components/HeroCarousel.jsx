@@ -53,36 +53,37 @@ const HeroCarousel = () => {
   }
 
   return (
-    <Carousel className="hero-carousel">
-      {slides.length > 0 ? (
-        slides.map((slide, index) => (
-          <Carousel.Item key={index}>
-            <div className="carousel-slide" style={{ backgroundImage: `url(${slide.image_url})` }}>
-              <div className="carousel-content">
-                <h2>{slide.title}</h2>
-                <p>{slide.description}</p>
-                {slide.product_card && (
-                  <div className="product-card">
-                    <img src={slide.product_card.icon} alt={slide.product_card.title} />
+    <Carousel 
+      className="hero-carousel"
+      interval={5000}
+      controls={true}
+      indicators={true}
+      touch={true}
+      wrap={true}
+    >
+      {slides.map((slide, index) => (
+        <Carousel.Item key={slide.id}>
+          <div className="carousel-slide">
+            <img src={slide.image_url} alt={slide.title} />
+            <div className="carousel-content">
+              <h2>{slide.title}</h2>
+              <p>{slide.description}</p>
+              {slide.product_card && (
+                <div className="carousel-product-card">
+                  <img src={slide.product_card.icon} alt="" />
+                  <div className="carousel-product-card-content">
                     <h3>{slide.product_card.title}</h3>
                     <p>{slide.product_card.description}</p>
-                    <button className="btn btn-primary">{slide.product_card.buttonText}</button>
+                    <button className="btn btn-light">
+                      {slide.product_card.buttonText}
+                    </button>
                   </div>
-                )}
-              </div>
-            </div>
-          </Carousel.Item>
-        ))
-      ) : (
-        <Carousel.Item>
-          <div className="carousel-slide">
-            <div className="carousel-content">
-              <h2>Welcome to Cyber International</h2>
-              <p>No slides available at the moment</p>
+                </div>
+              )}
             </div>
           </div>
         </Carousel.Item>
-      )}
+      ))}
     </Carousel>
   );
 };
