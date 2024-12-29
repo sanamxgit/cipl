@@ -1,27 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import axios from 'axios';
+import { useFeatured } from '../context/FeaturedContext';
+import './FeaturedProducts.css';
 
 const FeaturedProducts = () => {
+  const { selectedFeaturedBrand } = useFeatured();
   const [products, setProducts] = useState([]);
-  const [selectedBrandId, setSelectedBrandId] = useState(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const productsRowRef = useRef(null);
 
   useEffect(() => {
     fetchProducts();
-  }, [selectedBrandId]);
+  }, [selectedFeaturedBrand]);
 
   const fetchProducts = async () => {
     try {
-      const url = selectedBrandId 
-        ? `/backend/api/products.php?brand_id=${selectedBrandId}`
+      console.log('Fetching products for brand:', selectedFeaturedBrand);
+      const url = selectedFeaturedBrand
+        ? `/backend/api/products.php?brand_id=${selectedFeaturedBrand}`
         : '/backend/api/products.php';
       
+      console.log('Fetching from URL:', url);
       const response = await axios.get(url);
+      
       if (response.data.status === 'success') {
-        setProducts(response.data.data);
+        const activeProducts = response.data.data.filter(product => product.is_active);
+        setProducts(activeProducts);
       }
     } catch (error) {
       console.error('Error fetching products:', error);
+    }
+  };
+
+  const handleScroll = (e) => {
+    const container = e.target;
+    setShowLeftArrow(container.scrollLeft > 0);
+  };
+
+  const scroll = (direction) => {
+    if (productsRowRef.current) {
+      const scrollAmount = 400;
+      const container = productsRowRef.current;
+      const newScrollPosition = container.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
+      
+      container.scrollTo({
+        left: newScrollPosition,
+        behavior: 'smooth'
+      });
     }
   };
 
@@ -29,31 +55,55 @@ const FeaturedProducts = () => {
     <section className="featured-products">
       <Container>
         <h2 className="text-center mb-5">Featured Products</h2>
-        <Row className="g-4 justify-content-center">
-          {products.map((product) => (
-            <Col key={product.id} xs={12} sm={6} md={4}>
-              <Card className="product-card">
-                <Card.Img 
-                  variant="top" 
-                  src={product.image_url} 
-                  alt={product.name}
-                />
-                <Card.Body>
-                  <Card.Title>{product.name}</Card.Title>
-                  <Card.Text>{product.description}</Card.Text>
-                  <div className="btn-container">
-                    <button className="btn btn-primary">
-                      {product.primary_button_text}
-                    </button>
-                    <button className="btn btn-outline-primary">
-                      {product.secondary_button_text}
-                    </button>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+        <div className="products-grid">
+          {showLeftArrow && (
+            <button 
+              className="scroll-arrow left"
+              onClick={() => scroll('left')}
+              aria-label="Scroll left"
+            >
+              <i className="fas fa-angle-left"></i>
+            </button>
+          )}
+          
+          <div 
+            className="products-row" 
+            ref={productsRowRef}
+            onScroll={handleScroll}
+          >
+            {products.map((product) => (
+              <div key={product.id} className="product-card-wrapper">
+                <Card className="product-card">
+                  <Card.Img 
+                    variant="top" 
+                    src={product.image_url} 
+                    alt={product.name}
+                  />
+                  <Card.Body>
+                    <Card.Title>{product.name}</Card.Title>
+                    <Card.Text>{product.description}</Card.Text>
+                    <div className="btn-container">
+                      <button className="btn btn-primary">
+                        {product.primary_button_text}
+                      </button>
+                      <button className="btn btn-outline-primary">
+                        {product.secondary_button_text}
+                      </button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </div>
+            ))}
+          </div>
+
+          <button 
+            className="scroll-arrow right"
+            onClick={() => scroll('right')}
+            aria-label="Scroll right"
+          >
+            <i className="fas fa-angle-right"></i>
+          </button>
+        </div>
       </Container>
     </section>
   );

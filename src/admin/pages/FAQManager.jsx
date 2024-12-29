@@ -1,110 +1,107 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Form, Button, Table } from 'react-bootstrap';
+import { Card, Form, Button, Row, Col, Table } from 'react-bootstrap';
 import axios from 'axios';
 
-const BrandsManager = () => {
-  const [brands, setBrands] = useState([]);
-  const [selectedBrand, setSelectedBrand] = useState(null);
+const FAQManager = () => {
+  const [faqs, setFaqs] = useState([]);
+  const [selectedFaq, setSelectedFaq] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    logo_url: '',
-    description: '',
-    is_active: true
+    question: '',
+    answer: '',
+    is_active: true,
+    position: 0
   });
 
   useEffect(() => {
-    fetchBrands();
+    fetchFaqs();
   }, []);
 
-  const fetchBrands = async () => {
+  const fetchFaqs = async () => {
     try {
-      const response = await axios.get('/backend/api/brands.php');
+      const response = await axios.get('/backend/api/faqs.php');
       if (response.data.status === 'success') {
-        setBrands(response.data.data);
+        setFaqs(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching brands:', error);
+      console.error('Error fetching FAQs:', error);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = `/backend/api/brands.php${editMode ? `?id=${selectedBrand.id}` : ''}`;
+      const endpoint = `/backend/api/faqs.php${editMode ? `?id=${selectedFaq.id}` : ''}`;
       const method = editMode ? 'put' : 'post';
       
       const response = await axios({
         method,
         url: endpoint,
-        data: formData,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
+        data: formData
       });
 
       if (response.data.status === 'success') {
-        await fetchBrands();
+        await fetchFaqs();
         resetForm();
-        alert(response.data.message);
+        alert(editMode ? 'FAQ updated successfully!' : 'FAQ added successfully!');
       }
     } catch (error) {
-      console.error('Error saving brand:', error);
-      alert(error.response?.data?.message || 'Failed to save brand');
+      console.error('Error saving FAQ:', error);
+      alert('Failed to save FAQ');
     }
   };
 
-  const handleEdit = (brand) => {
-    setSelectedBrand(brand);
+  const handleEdit = (faq) => {
+    setSelectedFaq(faq);
     setFormData({
-      name: brand.name,
-      logo_url: brand.logo_url,
-      description: brand.description,
-      is_active: brand.is_active
+      question: faq.question,
+      answer: faq.answer,
+      is_active: faq.is_active,
+      position: faq.position
     });
     setEditMode(true);
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this brand?')) {
+    if (window.confirm('Are you sure you want to delete this FAQ?')) {
       try {
-        await axios.delete(`/backend/api/brands.php?id=${id}`);
-        fetchBrands();
+        await axios.delete(`/backend/api/faqs.php?id=${id}`);
+        await fetchFaqs();
       } catch (error) {
-        console.error('Error deleting brand:', error);
+        console.error('Error deleting FAQ:', error);
+        alert('Failed to delete FAQ');
       }
     }
   };
 
-  const handleToggleStatus = async (brand) => {
+  const handleToggleStatus = async (faq) => {
     try {
-      const response = await axios.put(`/backend/api/brands.php?id=${brand.id}`, {
-        ...brand,
-        is_active: !brand.is_active
+      const response = await axios.put(`/backend/api/faqs.php?id=${faq.id}`, {
+        ...faq,
+        is_active: !faq.is_active
       });
 
       if (response.data.status === 'success') {
-        setBrands(brands.map(b => 
-          b.id === brand.id 
-            ? { ...b, is_active: !b.is_active }
-            : b
+        setFaqs(faqs.map(f => 
+          f.id === faq.id 
+            ? { ...f, is_active: !f.is_active }
+            : f
         ));
       }
     } catch (error) {
-      console.error('Error toggling brand status:', error);
-      alert('Failed to update brand status');
+      console.error('Error toggling FAQ status:', error);
+      alert('Failed to update FAQ status');
     }
   };
 
   const resetForm = () => {
-    setSelectedBrand(null);
+    setSelectedFaq(null);
     setEditMode(false);
     setFormData({
-      name: '',
-      logo_url: '',
-      description: '',
-      is_active: true
+      question: '',
+      answer: '',
+      is_active: true,
+      position: 0
     });
   };
 
@@ -113,49 +110,43 @@ const BrandsManager = () => {
       <Col md={8}>
         <Card>
           <Card.Header>
-            <h5 className="m-0">Brands List</h5>
+            <h5 className="m-0">FAQs List</h5>
           </Card.Header>
           <Card.Body>
             <Table responsive>
               <thead>
                 <tr>
-                  <th>Logo</th>
-                  <th>Name</th>
+                  <th>Question</th>
                   <th>Status</th>
+                  <th>Position</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {brands.map((brand) => (
-                  <tr key={brand.id}>
-                    <td>
-                      <img 
-                        src={brand.logo_url} 
-                        alt={brand.name} 
-                        style={{ height: '40px' }}
-                      />
-                    </td>
-                    <td>{brand.name}</td>
+                {faqs.map((faq) => (
+                  <tr key={faq.id}>
+                    <td>{faq.question}</td>
                     <td>
                       <Form.Check
                         type="switch"
-                        checked={brand.is_active}
-                        onChange={() => handleToggleStatus(brand)}
+                        checked={faq.is_active}
+                        onChange={() => handleToggleStatus(faq)}
                       />
                     </td>
+                    <td>{faq.position}</td>
                     <td>
                       <Button
                         variant="outline-primary"
                         size="sm"
                         className="me-2"
-                        onClick={() => handleEdit(brand)}
+                        onClick={() => handleEdit(faq)}
                       >
                         Edit
                       </Button>
                       <Button
                         variant="outline-danger"
                         size="sm"
-                        onClick={() => handleDelete(brand.id)}
+                        onClick={() => handleDelete(faq.id)}
                       >
                         Delete
                       </Button>
@@ -171,36 +162,38 @@ const BrandsManager = () => {
       <Col md={4}>
         <Card>
           <Card.Header>
-            <h5 className="m-0">{editMode ? 'Edit Brand' : 'Add New Brand'}</h5>
+            <h5 className="m-0">{editMode ? 'Edit FAQ' : 'Add New FAQ'}</h5>
           </Card.Header>
           <Card.Body>
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
-                <Form.Label>Brand Name</Form.Label>
+                <Form.Label>Question</Form.Label>
                 <Form.Control
                   type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  value={formData.question}
+                  onChange={(e) => setFormData({...formData, question: e.target.value})}
                   required
                 />
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Logo URL</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={formData.logo_url}
-                  onChange={(e) => setFormData({...formData, logo_url: e.target.value})}
-                  required
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Description</Form.Label>
+                <Form.Label>Answer</Form.Label>
                 <Form.Control
                   as="textarea"
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  rows={4}
+                  value={formData.answer}
+                  onChange={(e) => setFormData({...formData, answer: e.target.value})}
+                  required
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Position</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={formData.position}
+                  onChange={(e) => setFormData({...formData, position: parseInt(e.target.value)})}
+                  required
                 />
               </Form.Group>
 
@@ -215,7 +208,7 @@ const BrandsManager = () => {
 
               <div className="d-flex gap-2">
                 <Button type="submit" variant="primary">
-                  {editMode ? 'Update Brand' : 'Add Brand'}
+                  {editMode ? 'Update FAQ' : 'Add FAQ'}
                 </Button>
                 {editMode && (
                   <Button variant="secondary" onClick={resetForm}>
@@ -231,4 +224,4 @@ const BrandsManager = () => {
   );
 };
 
-export default BrandsManager; 
+export default FAQManager; 

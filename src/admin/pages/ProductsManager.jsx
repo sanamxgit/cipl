@@ -5,8 +5,10 @@ import axios from 'axios';
 const ProductsManager = () => {
   const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [editMode, setEditMode] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({
     brand_id: '',
     name: '',
@@ -23,6 +25,10 @@ const ProductsManager = () => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    fetchProducts();
+  }, [selectedBrand]);
+
   const fetchBrands = async () => {
     try {
       const response = await axios.get('/backend/api/brands.php');
@@ -36,7 +42,10 @@ const ProductsManager = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('/backend/api/products.php');
+      const url = selectedBrand 
+        ? `/backend/api/products.php?brand_id=${selectedBrand}&admin=true`
+        : '/backend/api/products.php?admin=true';
+      const response = await axios.get(url);
       if (response.data.status === 'success') {
         setProducts(response.data.data);
       }
@@ -127,17 +136,24 @@ const ProductsManager = () => {
     });
   };
 
-  const handleToggleActive = async (id) => {
+  const handleToggleStatus = async (product) => {
     try {
-      const response = await axios.put(`/backend/api/products.php?id=${id}&action=toggle`);
+      const response = await axios.put(`/backend/api/products.php?id=${product.id}`, {
+        is_active: !product.is_active
+      });
+
       if (response.data.status === 'success') {
-        await fetchProducts();
+        setProducts(products.map(p => 
+          p.id === product.id 
+            ? { ...p, is_active: !p.is_active }
+            : p
+        ));
       } else {
-        throw new Error(response.data.message || 'Failed to toggle status');
+        throw new Error(response.data.message || 'Failed to update status');
       }
     } catch (error) {
       console.error('Error toggling product status:', error);
-      alert(error.response?.data?.message || 'Failed to toggle product status');
+      alert('Failed to update product status');
     }
   };
 
@@ -147,6 +163,29 @@ const ProductsManager = () => {
         <Card>
           <Card.Header className="d-flex justify-content-between align-items-center">
             <h5 className="m-0">Products List</h5>
+            <div className="d-flex gap-3 align-items-center">
+              <Form.Select 
+                value={selectedBrand}
+                onChange={(e) => setSelectedBrand(e.target.value)}
+                style={{ width: '200px' }}
+              >
+                <option value="">All Brands</option>
+                {brands.map(brand => (
+                  <option key={brand.id} value={brand.id}>
+                    {brand.name}
+                  </option>
+                ))}
+              </Form.Select>
+              <Button 
+                variant="primary" 
+                onClick={() => {
+                  setShowAddModal(true);
+                  resetForm();
+                }}
+              >
+                Add Product
+              </Button>
+            </div>
           </Card.Header>
           <Card.Body>
             <Table responsive>
@@ -177,7 +216,7 @@ const ProductsManager = () => {
                       <Form.Check
                         type="switch"
                         checked={product.is_active}
-                        onChange={() => handleToggleActive(product.id)}
+                        onChange={() => handleToggleStatus(product)}
                       />
                     </td>
                     <td>

@@ -80,3 +80,25 @@
     max-height: 60px;
   }
 } 
+
+/* Import product card styles */
+.products-grid {
+  position: relative;
+  overflow: hidden;
+  padding: 0 40px;
+  margin: 20px 0;
+}
+
+.products-row {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 20px 0;
+  gap: 40px;
+}
+
+/* ... rest of the styles from FeaturedProducts.css ... */

@@ -52,7 +52,8 @@ class Brands {
                 name = :name,
                 logo_url = :logo_url,
                 description = :description,
-                is_active = :is_active
+                is_active = :is_active,
+                updated_at = CURRENT_TIMESTAMP
                 WHERE id = :id";
         
         $stmt = $this->conn->prepare($query);
@@ -126,24 +127,33 @@ switch($method) {
         break;
         
     case 'PUT':
+        $data = json_decode(file_get_contents('php://input'), true);
         $id = isset($_GET['id']) ? $_GET['id'] : null;
+        
         if ($id) {
-            try {
-                $data = json_decode(file_get_contents('php://input'), true);
-                if($brands->updateBrand($id, $data)) {
-                    echo json_encode([
-                        'status' => 'success',
-                        'message' => 'Brand updated successfully'
-                    ]);
-                } else {
-                    throw new Exception('Failed to update brand');
-                }
-            } catch (Exception $e) {
-                http_response_code(500);
+            $query = "UPDATE brands SET 
+                      name = :name,
+                      logo_url = :logo_url,
+                      description = :description,
+                      is_active = :is_active,
+                      updated_at = CURRENT_TIMESTAMP
+                      WHERE id = :id";
+                      
+            $stmt = $conn->prepare($query);
+            
+            $stmt->bindParam(':name', $data['name']);
+            $stmt->bindParam(':logo_url', $data['logo_url']);
+            $stmt->bindParam(':description', $data['description']);
+            $stmt->bindParam(':is_active', $data['is_active'], PDO::PARAM_BOOL);
+            $stmt->bindParam(':id', $id);
+            
+            if ($stmt->execute()) {
                 echo json_encode([
-                    'status' => 'error',
-                    'message' => $e->getMessage()
+                    'status' => 'success',
+                    'message' => 'Brand updated successfully'
                 ]);
+            } else {
+                throw new Exception('Failed to update brand');
             }
         }
         break;

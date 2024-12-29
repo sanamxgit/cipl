@@ -86,6 +86,10 @@ const AdminLayout = ({ children }) => {
                 <Dropdown.Item as={Link} to="/admin/products">Products</Dropdown.Item>
                 <Dropdown.Item as={Link} to="/admin/video">Video Section</Dropdown.Item>
                 <Dropdown.Item as={Link} to="/admin/featured">Featured Products</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/admin/image-grid">Image Grid</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/admin/trusted-leaders">Trusted Leaders</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/admin/faqs">FAQs</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/admin/footer">Footer Content</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
 
@@ -108,6 +112,41 @@ const AdminLayout = ({ children }) => {
                 <span>Settings</span>
               </div>
             </Link>
+
+            <Dropdown>
+              <Dropdown.Toggle as={Nav.Link}>
+                <div className="nav-link-content">
+                  <img src="/icon-products.png" alt="" className="nav-icon" />
+                  <span>Products</span>
+                </div>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item as={Link} to="/admin/products">
+                  All Products
+                </Dropdown.Item>
+                <Dropdown.Item as={Link} to="/admin/products/microsoft-office-365">
+                  Microsoft Office 365
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+
+            <Dropdown>
+              <Dropdown.Toggle className={`nav-link ${isActive('/admin/products-view') ? 'active' : ''}`}>
+                <div className="nav-link-content">
+                  <img src="/icon-products.png" alt="" className="nav-icon" />
+                  <span>Products View</span>
+                </div>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item 
+                  as={Link} 
+                  to="/admin/products-view/microsoft-office-365"
+                  className={isActive('/admin/products-view/microsoft-office-365') ? 'active' : ''}
+                >
+                  Microsoft Office 365
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </Nav>
         </div>
 

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button } from 'react-bootstrap';
 import axios from 'axios';
+import { useFeatured } from '../../context/FeaturedContext';
 
 const FeaturedManager = () => {
+  const { selectedFeaturedBrand, setSelectedFeaturedBrand } = useFeatured();
   const [brands, setBrands] = useState([]);
-  const [selectedBrand, setSelectedBrand] = useState('');
 
   useEffect(() => {
     fetchBrands();
@@ -24,27 +25,27 @@ const FeaturedManager = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Update the selected brand in your app state or context
-      // This will filter products in the FeaturedProducts component
-      alert('Featured products updated successfully!');
+      // Save to localStorage to persist the selection
+      localStorage.setItem('featuredBrand', selectedFeaturedBrand);
+      alert('Featured brand updated successfully!');
     } catch (error) {
-      console.error('Error updating featured products:', error);
-      alert('Failed to update featured products');
+      console.error('Error updating featured brand:', error);
+      alert('Failed to update featured brand');
     }
   };
 
   return (
     <Card>
       <Card.Header>
-        <h5 className="m-0">Featured Products Filter</h5>
+        <h5 className="m-0">Featured Products Settings</h5>
       </Card.Header>
       <Card.Body>
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
             <Form.Label>Select Brand to Feature</Form.Label>
             <Form.Select
-              value={selectedBrand}
-              onChange={(e) => setSelectedBrand(e.target.value)}
+              value={selectedFeaturedBrand || ''}
+              onChange={(e) => setSelectedFeaturedBrand(e.target.value)}
             >
               <option value="">All Products</option>
               {brands.map(brand => (
@@ -54,9 +55,8 @@ const FeaturedManager = () => {
               ))}
             </Form.Select>
           </Form.Group>
-
           <Button type="submit" variant="primary">
-            Update Featured Products
+            Update Featured Brand
           </Button>
         </Form>
       </Card.Body>

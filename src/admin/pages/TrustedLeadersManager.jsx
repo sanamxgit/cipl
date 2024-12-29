@@ -1,109 +1,103 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Form, Button, Table } from 'react-bootstrap';
+import { Card, Form, Button, Row, Col, Table } from 'react-bootstrap';
 import axios from 'axios';
 
-const BrandsManager = () => {
-  const [brands, setBrands] = useState([]);
-  const [selectedBrand, setSelectedBrand] = useState(null);
+const TrustedLeadersManager = () => {
+  const [leaders, setLeaders] = useState([]);
+  const [selectedLeader, setSelectedLeader] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     logo_url: '',
-    description: '',
     is_active: true
   });
 
   useEffect(() => {
-    fetchBrands();
+    fetchLeaders();
   }, []);
 
-  const fetchBrands = async () => {
+  const fetchLeaders = async () => {
     try {
-      const response = await axios.get('/backend/api/brands.php');
+      const response = await axios.get('/backend/api/trusted-leaders.php');
       if (response.data.status === 'success') {
-        setBrands(response.data.data);
+        setLeaders(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching brands:', error);
+      console.error('Error fetching leaders:', error);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = `/backend/api/brands.php${editMode ? `?id=${selectedBrand.id}` : ''}`;
+      const endpoint = `/backend/api/trusted-leaders.php${editMode ? `?id=${selectedLeader.id}` : ''}`;
       const method = editMode ? 'put' : 'post';
       
       const response = await axios({
         method,
         url: endpoint,
-        data: formData,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
+        data: formData
       });
 
       if (response.data.status === 'success') {
-        await fetchBrands();
+        await fetchLeaders();
         resetForm();
-        alert(response.data.message);
+        alert(editMode ? 'Leader updated successfully!' : 'Leader added successfully!');
       }
     } catch (error) {
-      console.error('Error saving brand:', error);
-      alert(error.response?.data?.message || 'Failed to save brand');
+      console.error('Error saving leader:', error);
+      alert('Failed to save leader');
     }
   };
 
-  const handleEdit = (brand) => {
-    setSelectedBrand(brand);
+  const handleEdit = (leader) => {
+    setSelectedLeader(leader);
     setFormData({
-      name: brand.name,
-      logo_url: brand.logo_url,
-      description: brand.description,
-      is_active: brand.is_active
+      name: leader.name,
+      logo_url: leader.logo_url,
+      is_active: leader.is_active
     });
     setEditMode(true);
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this brand?')) {
+    if (window.confirm('Are you sure you want to delete this leader?')) {
       try {
-        await axios.delete(`/backend/api/brands.php?id=${id}`);
-        fetchBrands();
+        await axios.delete(`/backend/api/trusted-leaders.php?id=${id}`);
+        await fetchLeaders();
       } catch (error) {
-        console.error('Error deleting brand:', error);
+        console.error('Error deleting leader:', error);
+        alert('Failed to delete leader');
       }
     }
   };
 
-  const handleToggleStatus = async (brand) => {
+  const handleToggleStatus = async (leader) => {
     try {
-      const response = await axios.put(`/backend/api/brands.php?id=${brand.id}`, {
-        ...brand,
-        is_active: !brand.is_active
+      const response = await axios.put(`/backend/api/trusted-leaders.php?id=${leader.id}`, {
+        ...leader,
+        is_active: !leader.is_active
       });
 
       if (response.data.status === 'success') {
-        setBrands(brands.map(b => 
-          b.id === brand.id 
-            ? { ...b, is_active: !b.is_active }
-            : b
+        setLeaders(leaders.map(l => 
+          l.id === leader.id 
+            ? { ...l, is_active: !l.is_active }
+            : l
         ));
       }
     } catch (error) {
-      console.error('Error toggling brand status:', error);
-      alert('Failed to update brand status');
+      console.error('Error toggling leader status:', error);
+      alert('Failed to update leader status');
     }
   };
 
   const resetForm = () => {
-    setSelectedBrand(null);
+    setSelectedLeader(null);
     setEditMode(false);
     setFormData({
       name: '',
       logo_url: '',
-      description: '',
       is_active: true
     });
   };
@@ -113,7 +107,7 @@ const BrandsManager = () => {
       <Col md={8}>
         <Card>
           <Card.Header>
-            <h5 className="m-0">Brands List</h5>
+            <h5 className="m-0">Trusted Leaders List</h5>
           </Card.Header>
           <Card.Body>
             <Table responsive>
@@ -126,21 +120,21 @@ const BrandsManager = () => {
                 </tr>
               </thead>
               <tbody>
-                {brands.map((brand) => (
-                  <tr key={brand.id}>
+                {leaders.map((leader) => (
+                  <tr key={leader.id}>
                     <td>
                       <img 
-                        src={brand.logo_url} 
-                        alt={brand.name} 
+                        src={leader.logo_url} 
+                        alt={leader.name} 
                         style={{ height: '40px' }}
                       />
                     </td>
-                    <td>{brand.name}</td>
+                    <td>{leader.name}</td>
                     <td>
                       <Form.Check
                         type="switch"
-                        checked={brand.is_active}
-                        onChange={() => handleToggleStatus(brand)}
+                        checked={leader.is_active}
+                        onChange={() => handleToggleStatus(leader)}
                       />
                     </td>
                     <td>
@@ -148,14 +142,14 @@ const BrandsManager = () => {
                         variant="outline-primary"
                         size="sm"
                         className="me-2"
-                        onClick={() => handleEdit(brand)}
+                        onClick={() => handleEdit(leader)}
                       >
                         Edit
                       </Button>
                       <Button
                         variant="outline-danger"
                         size="sm"
-                        onClick={() => handleDelete(brand.id)}
+                        onClick={() => handleDelete(leader.id)}
                       >
                         Delete
                       </Button>
@@ -171,12 +165,12 @@ const BrandsManager = () => {
       <Col md={4}>
         <Card>
           <Card.Header>
-            <h5 className="m-0">{editMode ? 'Edit Brand' : 'Add New Brand'}</h5>
+            <h5 className="m-0">{editMode ? 'Edit Leader' : 'Add New Leader'}</h5>
           </Card.Header>
           <Card.Body>
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
-                <Form.Label>Brand Name</Form.Label>
+                <Form.Label>Company Name</Form.Label>
                 <Form.Control
                   type="text"
                   value={formData.name}
@@ -196,15 +190,6 @@ const BrandsManager = () => {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
                 <Form.Check
                   type="switch"
                   label="Active"
@@ -215,7 +200,7 @@ const BrandsManager = () => {
 
               <div className="d-flex gap-2">
                 <Button type="submit" variant="primary">
-                  {editMode ? 'Update Brand' : 'Add Brand'}
+                  {editMode ? 'Update Leader' : 'Add Leader'}
                 </Button>
                 {editMode && (
                   <Button variant="secondary" onClick={resetForm}>
@@ -231,4 +216,4 @@ const BrandsManager = () => {
   );
 };
 
-export default BrandsManager; 
+export default TrustedLeadersManager; 

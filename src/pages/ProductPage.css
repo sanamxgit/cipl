@@ -1,0 +1,65 @@
+.product-page {
+  min-height: 100vh;
+}
+
+.hero-section {
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  max-width: 600px;
+  margin-right: auto;
+}
+
+.hero-content h1 {
+  font-size: 3.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #0F172A;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  color: #64748B;
+  margin-bottom: 2rem;
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tab-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #fff;
+  color: #0F172A;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-button.active {
+  background: #0056b3;
+  color: #fff;
+}
+
+.hero-image {
+  position: absolute;
+  right: -5%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50%;
+  max-width: 800px;
+}
+
+.hero-image img {
+  width: 100%;
+  height: auto;
+}
+
+/* Add more styles for tab content section */ 

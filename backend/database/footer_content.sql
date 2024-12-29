@@ -1,0 +1,14 @@
+CREATE TABLE footer_content (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    section VARCHAR(50) NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    link_text VARCHAR(100),
+    link_url VARCHAR(255),
+    position INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    parent_section VARCHAR(50) DEFAULT NULL,
+    description TEXT DEFAULT NULL,
+    content TEXT DEFAULT NULL
+); 

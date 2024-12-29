@@ -1,0 +1,90 @@
+.featured-products {
+  padding: 40px 0;
+  background: #f8f9fa;
+}
+
+.products-grid {
+  position: relative;
+  overflow: hidden;
+  padding: 0 40px;
+  margin: 10px 0;
+  background: white;
+}
+
+.products-row {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 20px 0;
+  gap: 20px;
+}
+
+.products-row::-webkit-scrollbar {
+  display: none;
+}
+
+.product-card-wrapper {
+  flex: 0 0 auto;
+  width: 320px !important;
+  padding: 0;
+}
+
+.product-card {
+  height: 100%;
+  transition: transform 0.3s ease;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.product-card .card-img-top {
+  height: 200px;
+  object-fit: cover;
+}
+
+.product-card .card-body {
+  padding: 1.5rem;
+}
+
+.product-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.product-card .card-text {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.btn-container {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-container .btn {
+  flex: 1;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .product-card-wrapper {
+    width: 280px !important;
+  }
+
+  .product-card .card-img-top {
+    height: 160px;
+  }
+} 
