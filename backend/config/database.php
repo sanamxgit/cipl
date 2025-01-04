@@ -1,4 +1,6 @@
 <?php
+define('DEBUG', true);  // Set to false in production
+
 class Database {
     private $host = "localhost";
     private $db_name = "cipl";

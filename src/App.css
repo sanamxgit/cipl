@@ -14,3 +14,31 @@ body {
   padding: 0;
   min-height: 100vh;
 }
+
+/* Update the brand product card button styles */
+.brand-product-card .card-footer {
+  padding: 1rem;
+  background: transparent;
+  border-top: none;
+}
+
+.brand-product-card .btn {
+  min-width: 160px; /* Increased width to fit "Plans & Pricing" */
+  white-space: nowrap;
+  padding: 0.5rem 1rem;
+}
+
+.brand-product-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Reduced shadow intensity */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.brand-product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08); /* Reduced hover shadow */
+}
+
+/* Add some spacing between buttons if needed */
+.brand-product-card .card-footer .btn + .btn {
+  margin-left: 0.75rem;
+}

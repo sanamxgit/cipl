@@ -30,15 +30,6 @@ const AdminLayout = ({ children }) => {
               <i className={`fas fa-${isMenuExpanded ? 'chevron-left' : 'chevron-right'}`}></i>
             </button>
           </div>
-
-          {/* Search Bar */}
-          {/* <div className="sidebar-search">
-            <div className="search-box">
-              <i className="fas fa-search"></i>
-              <input type="text" placeholder="Search" />
-              <i className="fas fa-filter"></i>
-            </div>
-          </div> */}
         </div>
 
         {/* Navigation Links */}
@@ -53,7 +44,7 @@ const AdminLayout = ({ children }) => {
                 <span>Dashboard</span>
               </div>
             </Link>
-            
+
             <Link 
               to="/admin/products" 
               className={`nav-link ${isActive('/admin/products') ? 'active' : ''}`}
@@ -93,6 +84,28 @@ const AdminLayout = ({ children }) => {
               </Dropdown.Menu>
             </Dropdown>
 
+            <Dropdown>
+              <Dropdown.Toggle 
+                className={`nav-link ${isActive('/admin/product-page') ? 'active' : ''}`}
+              >
+                <div className="nav-link-content">
+                  <img src="/icon-store.png" alt="" className="nav-icon" />
+                  <span>Product Page</span>
+                </div>
+                <i className="fas fa-angle-down dropdown-arrow"></i>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item 
+                  as={Link} 
+                  to="/admin/microsoft-office"
+                  className={isActive('/admin/microsoft-office') ? 'active' : ''}
+                >
+                  Microsoft Office
+                </Dropdown.Item>
+                {/* Add more product pages here as needed */}
+              </Dropdown.Menu>
+            </Dropdown>
+
             <Link 
               to="/admin/help" 
               className={`nav-link ${isActive('/admin/help') ? 'active' : ''}`}
@@ -112,41 +125,6 @@ const AdminLayout = ({ children }) => {
                 <span>Settings</span>
               </div>
             </Link>
-
-            <Dropdown>
-              <Dropdown.Toggle as={Nav.Link}>
-                <div className="nav-link-content">
-                  <img src="/icon-products.png" alt="" className="nav-icon" />
-                  <span>Products</span>
-                </div>
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item as={Link} to="/admin/products">
-                  All Products
-                </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/admin/products/microsoft-office-365">
-                  Microsoft Office 365
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-
-            <Dropdown>
-              <Dropdown.Toggle className={`nav-link ${isActive('/admin/products-view') ? 'active' : ''}`}>
-                <div className="nav-link-content">
-                  <img src="/icon-products.png" alt="" className="nav-icon" />
-                  <span>Products View</span>
-                </div>
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item 
-                  as={Link} 
-                  to="/admin/products-view/microsoft-office-365"
-                  className={isActive('/admin/products-view/microsoft-office-365') ? 'active' : ''}
-                >
-                  Microsoft Office 365
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
           </Nav>
         </div>
 

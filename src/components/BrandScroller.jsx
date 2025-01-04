@@ -7,7 +7,10 @@ const BrandScroller = () => {
   const [brands, setBrands] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [products, setProducts] = useState([]);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showBrandLeftArrow, setShowBrandLeftArrow] = useState(false);
+  const [showBrandRightArrow, setShowBrandRightArrow] = useState(true);
+  const [showProductLeftArrow, setShowProductLeftArrow] = useState(false);
+  const [showProductRightArrow, setShowProductRightArrow] = useState(true);
 
   const scrollRef = useRef(null);
   const productsRowRef = useRef(null);
@@ -50,45 +53,90 @@ const BrandScroller = () => {
     }
   };
 
-  const scroll = (direction) => {
-    const targetRef = direction === 'brands' ? scrollRef : productsRowRef;
-    if (targetRef.current) {
-      const scrollAmount = 300;
-      const container = targetRef.current;
-      const newScrollPosition = container.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
-      
-      container.scrollTo({
-        left: newScrollPosition,
-        behavior: 'smooth'
-      });
+  const checkBrandScroll = () => {
+    const container = document.querySelector('.brands-container');
+    if (container) {
+      setShowBrandLeftArrow(container.scrollLeft > 0);
+      setShowBrandRightArrow(
+        container.scrollLeft < container.scrollWidth - container.clientWidth
+      );
     }
   };
 
-  const handleScroll = (e) => {
-    const container = e.target;
-    setShowLeftArrow(container.scrollLeft > 0);
+  const checkProductScroll = () => {
+    const container = document.querySelector('.products-row');
+    if (container) {
+      setShowProductLeftArrow(container.scrollLeft > 0);
+      setShowProductRightArrow(
+        container.scrollLeft < container.scrollWidth - container.clientWidth
+      );
+    }
   };
+
+  const handleBrandScroll = (direction) => {
+    const container = document.querySelector('.brands-container');
+    if (container) {
+      const scrollAmount = 300;
+      const currentScroll = container.scrollLeft;
+      container.scrollTo({
+        left: currentScroll + (direction === 'left' ? -scrollAmount : scrollAmount),
+        behavior: 'smooth'
+      });
+      setTimeout(checkBrandScroll, 500);
+    }
+  };
+
+  const handleProductScroll = (direction) => {
+    const container = document.querySelector('.products-row');
+    if (container) {
+      const scrollAmount = 300;
+      const currentScroll = container.scrollLeft;
+      container.scrollTo({
+        left: currentScroll + (direction === 'left' ? -scrollAmount : scrollAmount),
+        behavior: 'smooth'
+      });
+      setTimeout(checkProductScroll, 500);
+    }
+  };
+
+  useEffect(() => {
+    const brandContainer = document.querySelector('.brands-container');
+    const productContainer = document.querySelector('.products-row');
+
+    if (brandContainer) {
+      brandContainer.addEventListener('scroll', checkBrandScroll);
+      checkBrandScroll();
+    }
+
+    if (productContainer) {
+      productContainer.addEventListener('scroll', checkProductScroll);
+      checkProductScroll();
+    }
+
+    return () => {
+      if (brandContainer) {
+        brandContainer.removeEventListener('scroll', checkBrandScroll);
+      }
+      if (productContainer) {
+        productContainer.removeEventListener('scroll', checkProductScroll);
+      }
+    };
+  }, [selectedBrand]);
 
   return (
     <div className="products-section">
       <Container>
         {/* Brand Logos */}
         <div className="brands-grid mb-5">
-          {showLeftArrow && (
-            <button 
+          {showBrandLeftArrow && (
+            <div 
               className="scroll-arrow left" 
-              onClick={() => scroll('left')}
-              aria-label="Scroll left"
+              onClick={() => handleBrandScroll('left')}
             >
               <i className="fas fa-chevron-left"></i>
-            </button>
+            </div>
           )}
-          
-          <Row 
-            className="g-4" 
-            ref={scrollRef}
-            onScroll={handleScroll}
-          >
+          <div className="brands-container">
             {brands.map((brand) => (
               <Col key={brand.id}>
                 <Card 
@@ -103,15 +151,15 @@ const BrandScroller = () => {
                 </Card>
               </Col>
             ))}
-          </Row>
-
-          <button 
-            className="scroll-arrow right" 
-            onClick={() => scroll('right')}
-            aria-label="Scroll right"
-          >
-            <i className="fas fa-chevron-right"></i>
-          </button>
+          </div>
+          {showBrandRightArrow && (
+            <div 
+              className="scroll-arrow right" 
+              onClick={() => handleBrandScroll('right')}
+            >
+              <i className="fas fa-chevron-right"></i>
+            </div>
+          )}
         </div>
 
         {/* Products Grid */}
@@ -124,20 +172,17 @@ const BrandScroller = () => {
               </button>
             </div>
             <div className="products-grid">
-              {showLeftArrow && (
-                <button 
+              {showProductLeftArrow && (
+                <div 
                   className="scroll-arrow left" 
-                  onClick={() => scroll('left')}
-                  aria-label="Scroll left"
+                  onClick={() => handleProductScroll('left')}
                 >
-                  <i className="fas fa-angle-left"></i>
-                </button>
+                  <i className="fas fa-chevron-left"></i>
+                </div>
               )}
-              
               <div 
                 className="products-row" 
                 ref={productsRowRef}
-                onScroll={handleScroll}
               >
                 {products.map((product) => (
                   <div key={product.id} className="product-card-wrapper">
@@ -163,14 +208,14 @@ const BrandScroller = () => {
                   </div>
                 ))}
               </div>
-
-              <button 
-                className="scroll-arrow right" 
-                onClick={() => scroll('right')}
-                aria-label="Scroll right"
-              >
-                <i className="fas fa-angle-right"></i>
-              </button>
+              {showProductRightArrow && (
+                <div 
+                  className="scroll-arrow right" 
+                  onClick={() => handleProductScroll('right')}
+                >
+                  <i className="fas fa-chevron-right"></i>
+                </div>
+              )}
             </div>
           </div>
         )}

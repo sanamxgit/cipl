@@ -1,0 +1,466 @@
+.microsoft-office-view {
+  min-height: 100vh;
+}
+
+.ms-hero-banner {
+  position: relative;
+  height: 400px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ms-banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  z-index: 1;
+}
+
+.ms-banner-content {
+  position: relative;
+  z-index: 2;
+  padding: 0 5%;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.ms-category-selector {
+  background: white;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.ms-category-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1rem 0;
+}
+
+.ms-category-btn {
+  padding: 1rem 2rem;
+  border: none;
+  background: none;
+  font-size: 1.1rem;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.ms-category-btn.active {
+  color: #0066cc;
+  border-bottom-color: #0066cc;
+}
+
+.ms-product-cards {
+  padding: 10rem 0;
+  background: #f8f9fa;
+  position: relative;
+  overflow: visible;
+}
+
+.ms-product-cards .container {
+  position: relative;
+  overflow: visible;
+  padding: 0;
+  margin: 20px auto;
+  padding-left: 300px;
+  max-width: 100%;
+}
+
+.ms-product-cards .row {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  gap: 24px;
+  padding: 60px 40px;
+  margin: 0;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  padding-left: 120px;
+}
+
+.ms-product-cards .row::-webkit-scrollbar {
+  display: none;
+}
+
+.ms-product-cards .row {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+
+.ms-product-cards .col-md-6,
+.ms-product-cards .col-lg-4 {
+  flex: 0 0 auto;
+  width: 330px;
+  min-width: 330px;
+  padding: 25px 10px;
+  margin: 0;
+  transition: transform 0.3s ease;
+  scroll-snap-align: start;
+}
+
+.ms-product-card {
+  background: #fff;
+  border-radius: 12px;
+  padding:1rem;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  width: 100%;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1;
+}
+
+.ms-product-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+.ms-product-card:hover {
+  transform: scale(1.01);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  z-index: 3;
+}
+
+.ms-product-cards .row > div:first-child .ms-product-card {
+  position: relative;
+  border: none;
+  overflow: hidden;
+}
+
+.ms-product-cards .row > div:first-child .ms-product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
+  padding: 2px;
+  background: linear-gradient(
+    90deg,
+    #FFC107 0%,
+    #FFD700 25%,
+    #FFC107 50%,
+    #FFD700 75%,
+    #FFC107 100%
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  z-index: 1;
+}
+
+.ms-product-cards .row > div:first-child .ms-product-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 45%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 255, 255, 0.3) 55%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: shineEffect 3s infinite;
+}
+
+@keyframes shineEffect {
+  0% {
+    transform: translateX(-100%);
+  }
+  20%, 100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes borderRotate {
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.ms-product-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.ms-product-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.ms-product-tag {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #fff;
+  padding: 0.35rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.ms-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+}
+
+.ms-feature-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.7rem;
+  font-size: 0.82rem;
+  color: #555;
+}
+
+.ms-feature-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.ms-product-card-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.ms-product-card-buttons .btn {
+  flex: 1;
+  white-space: nowrap;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.ms-product-card-section {
+  margin-bottom: 2rem;
+}
+
+.ms-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Add these styles for horizontal scrolling */
+.ms-product-cards .row {
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  position: relative;
+  padding: 0 40px;
+  gap: 30px;
+  margin: 0;
+}
+
+.ms-product-cards .col-md-6,
+.ms-product-cards .col-lg-4 {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0;
+  margin: 0;
+}
+
+/* Scroll arrows for product cards */
+.ms-scroll-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 4;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.ms-scroll-arrow.left {
+  left: 20px;
+  z-index: 10;
+}
+
+.ms-scroll-arrow.right {
+  right: 20px;
+  z-index: 10;
+}
+
+.ms-scroll-arrow:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Add these styles for partner logos */
+.ms-partner-logos {
+  padding: 2rem 0;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.partner-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.pipeline {
+  color: #666;
+  font-size: 2rem;
+  font-weight: 300;
+  margin: 0 1rem;
+}
+
+/* Video section styles */
+.ms-video-section {
+  padding: 6rem 0;
+  background: #000;
+  overflow: hidden;
+  color: #fff;
+  position: relative;
+}
+
+.ms-video-container {
+  position: relative;
+  max-width: 100%;
+  margin: 0 auto;
+  padding-left: 300px;
+}
+
+.ms-video-row {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 24px;
+  padding: 40px 0;
+  margin: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+}
+
+.ms-video-row::-webkit-scrollbar {
+  display: none;
+}
+
+.ms-video-card {
+  flex: 0 0 auto;
+  width: 460px;
+  min-width: 460px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.ms-video-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ms-video-wrapper {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  background: #000;
+}
+
+.ms-video-thumbnail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.ms-video-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  object-fit: cover;
+  z-index: 2;
+}
+
+.ms-video-card.visible .ms-video-thumbnail {
+  opacity: 0;
+}
+
+.ms-video-card.visible .ms-video-player {
+  opacity: 1;
+}
+
+.ms-video-content {
+  padding: 1.5rem;
+  background: linear-gradient(to top, #000, transparent);
+}
+
+.ms-video-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  color: #fff;
+}
+
+.ms-video-description {
+  font-size: 1rem;
+  color: #999;
+  line-height: 1.5;
+}
+
+.ms-video-card:hover .ms-video-player {
+  opacity: 1;
+} 

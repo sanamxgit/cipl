@@ -26,6 +26,10 @@ import FAQManager from './admin/pages/FAQManager';
 import Footer from './components/Footer';
 import NotSureSection from './components/NotSureSection';
 import FooterManager from './admin/pages/FooterManager';
+import ProductView from './components/ProductView';
+import ProductCategoryView from './components/ProductCategoryView';
+import ProductCategoryManager from './admin/pages/ProductCategoryManager';
+import MicrosoftOfficeManager from './admin/pages/MicrosoftOfficeManager';
 
 const ProtectedRoute = ({ children }) => {
   if (!isAuthenticated()) {
@@ -80,6 +84,9 @@ function App() {
               <Footer />
             </>
           } />
+          <Route path="/products/microsoft" element={<ProductCategoryView />} />
+          <Route path="/products/:slug" element={<ProductView />} />
+          <Route path="/products/:category" element={<ProductCategoryView />} />
           <Route path="/admin/*" element={
             <ProtectedRoute>
               <AdminLayout>
@@ -94,6 +101,8 @@ function App() {
                   <Route path="trusted-leaders" element={<TrustedLeadersManager />} />
                   <Route path="faqs" element={<FAQManager />} />
                   <Route path="footer" element={<FooterManager />} />
+                  <Route path="product-categories" element={<ProductCategoryManager />} />
+                  <Route path="microsoft-office" element={<MicrosoftOfficeManager />} />
                 </Routes>
               </AdminLayout>
             </ProtectedRoute>

@@ -1,0 +1,96 @@
+.product-view {
+  min-height: 100vh;
+}
+
+.hero-banner {
+  height: 500px;
+  background-size: cover;
+  background-position: center;
+  color: white;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.hero-banner .container {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-banner h1 {
+  font-size: 3.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.hero-banner p {
+  font-size: 1.5rem;
+  max-width: 600px;
+}
+
+.hero-description {
+  font-size: 1.2rem;
+  max-width: 800px;
+  line-height: 1.6;
+  margin-top: 1.5rem;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.category-selector {
+  background: white;
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.category-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.category-btn {
+  padding: 1rem 2rem;
+  border: none;
+  background: none;
+  font-size: 1.1rem;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.category-btn.active {
+  color: #0066cc;
+  border-bottom-color: #0066cc;
+}
+
+.product-content {
+  padding: 3rem 0;
+}
+
+.product-content h2 {
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
+  color: #333;
+} 

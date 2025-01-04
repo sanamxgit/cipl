@@ -19,6 +19,7 @@ const ProductsManager = () => {
     secondary_button_text: 'Free Trial',
     is_active: true
   });
+  const [selectedCategory, setSelectedCategory] = useState('home');
 
   useEffect(() => {
     fetchBrands();
@@ -155,6 +156,10 @@ const ProductsManager = () => {
       console.error('Error toggling product status:', error);
       alert('Failed to update product status');
     }
+  };
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
   };
 
   return (
@@ -328,6 +333,16 @@ const ProductsManager = () => {
                   label="Active"
                   checked={formData.is_active}
                   onChange={(e) => setFormData({...formData, is_active: e.target.checked})}
+                />
+              </Form.Group>
+
+              <Form.Group>
+                <Form.Label>URL Slug</Form.Label>
+                <Form.Control 
+                  type="text"
+                  value={formData.slug || ''}
+                  onChange={(e) => setFormData({...formData, slug: e.target.value})}
+                  placeholder="e.g., microsoft-office-365"
                 />
               </Form.Group>
 
