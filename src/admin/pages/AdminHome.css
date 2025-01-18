@@ -1,0 +1,21 @@
+.admin-dashboard {
+  padding: 20px;
+}
+
+.admin-dashboard .card {
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.admin-dashboard .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.admin-dashboard .table th {
+  font-weight: 600;
+  color: #495057;
+}
+
+.admin-dashboard .table td {
+  vertical-align: middle;
+} 

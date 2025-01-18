@@ -19,13 +19,16 @@ ALTER TABLE microsoft_office_page
 ADD COLUMN microsoft_logo VARCHAR(255) DEFAULT '/path/to/microsoft-logo.png',
 ADD COLUMN partner_logo VARCHAR(255); 
 
-CREATE TABLE microsoft_videos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    video_url VARCHAR(255) NOT NULL,
-    thumbnail_url VARCHAR(255) NOT NULL,
-    sort_order INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
+ALTER TABLE microsoft_office_page 
+ADD COLUMN IF NOT EXISTS video_title VARCHAR(255) DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS video_description TEXT DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS video_url VARCHAR(255) DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS video_thumbnail_url VARCHAR(255) DEFAULT NULL;
+
+-- Drop the microsoft_videos table since we're not using it anymore
+DROP TABLE IF EXISTS microsoft_videos; 
+
+-- Run this query to check the video data
+SELECT video_url, video_title, video_description, video_thumbnail_url 
+FROM microsoft_office_page 
+WHERE id = 1; 

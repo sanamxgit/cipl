@@ -105,8 +105,12 @@ try {
                 $conn->beginTransaction();
 
                 $sql = "INSERT INTO microsoft_office_page 
-                    (id, title, subtitle, banner_image, is_image_url, main_heading, main_description, floating_icons, plans, microsoft_logo) 
-                    VALUES (1, :title, :subtitle, :banner_image, :is_image_url, :main_heading, :main_description, :floating_icons, :plans, :microsoft_logo)
+                    (id, title, subtitle, banner_image, is_image_url, main_heading, 
+                    main_description, floating_icons, plans, microsoft_logo,
+                    video_title, video_description, video_url, video_thumbnail_url) 
+                    VALUES (1, :title, :subtitle, :banner_image, :is_image_url, :main_heading,
+                    :main_description, :floating_icons, :plans, :microsoft_logo,
+                    :video_title, :video_description, :video_url, :video_thumbnail_url)
                     ON DUPLICATE KEY UPDATE
                     title = VALUES(title),
                     subtitle = VALUES(subtitle),
@@ -116,7 +120,11 @@ try {
                     main_description = VALUES(main_description),
                     floating_icons = VALUES(floating_icons),
                     plans = VALUES(plans),
-                    microsoft_logo = VALUES(microsoft_logo)";
+                    microsoft_logo = VALUES(microsoft_logo),
+                    video_title = VALUES(video_title),
+                    video_description = VALUES(video_description),
+                    video_url = VALUES(video_url),
+                    video_thumbnail_url = VALUES(video_thumbnail_url)";
 
                 $stmt = $conn->prepare($sql);
 
@@ -129,7 +137,11 @@ try {
                     ':main_description' => $input['main_description'],
                     ':floating_icons' => json_encode($input['floating_icons'] ?? []),
                     ':plans' => json_encode($input['plans']),
-                    ':microsoft_logo' => $input['microsoftLogo'] ?? '/images/microsoft-logo.png'
+                    ':microsoft_logo' => $input['microsoftLogo'] ?? '/images/microsoft-logo.png',
+                    ':video_title' => $input['video_title'] ?? '',
+                    ':video_description' => $input['video_description'] ?? '',
+                    ':video_url' => $input['video_url'] ?? '',
+                    ':video_thumbnail_url' => $input['video_thumbnail_url'] ?? ''
                 ];
 
                 $result = $stmt->execute($params);
@@ -152,41 +164,57 @@ try {
         }
     }
     else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $stmt = $conn->prepare("SELECT * FROM microsoft_office_page WHERE id = 1");
-        $stmt->execute();
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $conn->prepare("SELECT * FROM microsoft_office_page WHERE id = 1");
+            $stmt->execute();
+            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            error_log('Raw database data: ' . print_r($data, true));
 
-        if (!$data) {
-            // Return default values if no data exists
-            $data = [
-                'title' => 'Get started with Microsoft Office 365 today',
-                'subtitle' => 'Collaborate, create, and achieve more with the world\'s leading productivity suite.',
-                'banner_image' => '',
-                'is_image_url' => false,
-                'main_heading' => 'Unlock productivity, creativity, and generative AI for your organization.',
-                'main_description' => 'Microsoft 365 empowers your employees to do their best work with the power of generative AI in the apps they use daily.',
-                'floating_icons' => '[]',
-                'plans' => '{"home":{"title":"For Home","cards":[]},"business":{"title":"For Business","cards":[]}}',
-                'microsoft_logo' => '/images/microsoft-logo.png'
-            ];
+            if ($data) {
+                // Decode JSON fields
+                $data['floating_icons'] = json_decode($data['floating_icons'], true) ?? [];
+                $data['plans'] = json_decode($data['plans'], true) ?? [
+                    'home' => ['title' => 'For Home', 'cards' => []],
+                    'business' => ['title' => 'For Business', 'cards' => []]
+                ];
+                $data['features'] = json_decode($data['features'], true) ?? [];
+
+                // Clean and validate video URL
+                if (!empty($data['video_url'])) {
+                    $data['video_url'] = filter_var(trim($data['video_url']), FILTER_SANITIZE_URL);
+                    
+                    // Set proper headers for CORS
+                    header('Access-Control-Allow-Origin: *');
+                    header('Access-Control-Allow-Methods: GET');
+                    header('Access-Control-Allow-Headers: Content-Type');
+                    
+                    // Verify if URL is accessible and get content type
+                    $headers = get_headers($data['video_url'], 1);
+                    if ($headers) {
+                        error_log('Content-Type: ' . ($headers['Content-Type'] ?? 'unknown'));
+                    }
+                }
+
+                error_log('Processed video data: ' . json_encode([
+                    'video_url' => $data['video_url'] ?? null,
+                    'video_title' => $data['video_title'] ?? '',
+                    'video_description' => $data['video_description'] ?? ''
+                ]));
+            }
+
+            echo json_encode([
+                'status' => 'success',
+                'data' => $data
+            ]);
+        } catch (Exception $e) {
+            error_log('Error in GET request: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
         }
-
-        // Decode JSON fields
-        $data['floating_icons'] = json_decode($data['floating_icons'], true) ?? [];
-        $data['plans'] = json_decode($data['plans'], true);
-        
-        // Ensure microsoftLogo field is present
-        $data['microsoftLogo'] = $data['microsoft_logo'] ?? '/images/microsoft-logo.png';
-
-        $videos = getMicrosoftVideos();
-        error_log('Fetched videos: ' . print_r($videos, true));  // Debug log
-
-        $data['videos'] = $videos;
-
-        echo json_encode([
-            'status' => 'success',
-            'data' => $data
-        ]);
     }
     else {
         throw new Exception('Invalid request method');
@@ -203,21 +231,47 @@ try {
 
 function getMicrosoftVideos() {
     global $conn;
-    $stmt = $conn->prepare("SELECT * FROM microsoft_videos ORDER BY sort_order ASC");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    try {
+        $stmt = $conn->prepare("SELECT * FROM microsoft_videos ORDER BY sort_order ASC");
+        $stmt->execute();
+        $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Debug log
+        error_log('Videos from database: ' . print_r($videos, true));
+        
+        return $videos;
+    } catch (PDOException $e) {
+        error_log('Database error: ' . $e->getMessage());
+        return [];
+    }
 }
 
 function addMicrosoftVideo($data) {
     global $conn;
-    $stmt = $conn->prepare("INSERT INTO microsoft_videos (title, description, video_url, thumbnail_url, sort_order) VALUES (?, ?, ?, ?, ?)");
-    return $stmt->execute([
-        $data['title'],
-        $data['description'],
-        $data['video_url'],
-        $data['thumbnail_url'],
-        $data['sort_order']
-    ]);
+    try {
+        // Debug log
+        error_log('Adding video with data: ' . print_r($data, true));
+        
+        $stmt = $conn->prepare("INSERT INTO microsoft_videos (title, description, video_url, thumbnail_url, sort_order) VALUES (?, ?, ?, ?, ?)");
+        $result = $stmt->execute([
+            $data['title'],
+            $data['description'],
+            $data['video_url'],
+            $data['thumbnail_url'],
+            $data['sort_order']
+        ]);
+        
+        if ($result) {
+            error_log('Video added successfully with ID: ' . $conn->lastInsertId());
+        } else {
+            error_log('Failed to add video. Error: ' . print_r($stmt->errorInfo(), true));
+        }
+        
+        return $result;
+    } catch (PDOException $e) {
+        error_log('Database error adding video: ' . $e->getMessage());
+        throw $e;
+    }
 }
 
 function updateMicrosoftVideo($id, $data) {

@@ -2,15 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import '../styles/BrandScroller.css';
+import QuotationModal from './QuotationModal';
 
 const BrandScroller = () => {
   const [brands, setBrands] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [products, setProducts] = useState([]);
-  const [showBrandLeftArrow, setShowBrandLeftArrow] = useState(false);
-  const [showBrandRightArrow, setShowBrandRightArrow] = useState(true);
-  const [showProductLeftArrow, setShowProductLeftArrow] = useState(false);
-  const [showProductRightArrow, setShowProductRightArrow] = useState(true);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showQuotation, setShowQuotation] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const scrollRef = useRef(null);
   const productsRowRef = useRef(null);
@@ -53,92 +53,51 @@ const BrandScroller = () => {
     }
   };
 
-  const checkBrandScroll = () => {
-    const container = document.querySelector('.brands-container');
-    if (container) {
-      setShowBrandLeftArrow(container.scrollLeft > 0);
-      setShowBrandRightArrow(
-        container.scrollLeft < container.scrollWidth - container.clientWidth
-      );
-    }
-  };
-
-  const checkProductScroll = () => {
-    const container = document.querySelector('.products-row');
-    if (container) {
-      setShowProductLeftArrow(container.scrollLeft > 0);
-      setShowProductRightArrow(
-        container.scrollLeft < container.scrollWidth - container.clientWidth
-      );
-    }
-  };
-
-  const handleBrandScroll = (direction) => {
-    const container = document.querySelector('.brands-container');
-    if (container) {
+  const scroll = (direction, type) => {
+    const targetRef = type === 'brands' ? scrollRef : productsRowRef;
+    if (targetRef.current) {
       const scrollAmount = 300;
-      const currentScroll = container.scrollLeft;
+      const container = targetRef.current;
+      const newScrollPosition = container.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
+      
       container.scrollTo({
-        left: currentScroll + (direction === 'left' ? -scrollAmount : scrollAmount),
+        left: newScrollPosition,
         behavior: 'smooth'
       });
-      setTimeout(checkBrandScroll, 500);
     }
   };
 
-  const handleProductScroll = (direction) => {
-    const container = document.querySelector('.products-row');
-    if (container) {
-      const scrollAmount = 300;
-      const currentScroll = container.scrollLeft;
-      container.scrollTo({
-        left: currentScroll + (direction === 'left' ? -scrollAmount : scrollAmount),
-        behavior: 'smooth'
-      });
-      setTimeout(checkProductScroll, 500);
-    }
+  const handleScroll = (e) => {
+    const container = e.target;
+    setShowLeftArrow(container.scrollLeft > 0);
   };
-
-  useEffect(() => {
-    const brandContainer = document.querySelector('.brands-container');
-    const productContainer = document.querySelector('.products-row');
-
-    if (brandContainer) {
-      brandContainer.addEventListener('scroll', checkBrandScroll);
-      checkBrandScroll();
-    }
-
-    if (productContainer) {
-      productContainer.addEventListener('scroll', checkProductScroll);
-      checkProductScroll();
-    }
-
-    return () => {
-      if (brandContainer) {
-        brandContainer.removeEventListener('scroll', checkBrandScroll);
-      }
-      if (productContainer) {
-        productContainer.removeEventListener('scroll', checkProductScroll);
-      }
-    };
-  }, [selectedBrand]);
+  const handleQuotationClick = (product) => {
+    setSelectedProduct(product);
+    setShowQuotation(true);
+  };
 
   return (
-    <div className="products-section">
+    <div className="products-section bg-white">
       <Container>
         {/* Brand Logos */}
-        <div className="brands-grid mb-5">
-          {showBrandLeftArrow && (
-            <div 
+        <div className="brands-grid mb-5 position-relative">
+          {showLeftArrow && (
+            <button 
               className="scroll-arrow left" 
-              onClick={() => handleBrandScroll('left')}
+              onClick={() => scroll('left', 'brands')}
+              aria-label="Scroll left"
             >
-              <i className="fas fa-chevron-left"></i>
-            </div>
+              <i className="fas fa-angle-left"></i>
+            </button>
           )}
-          <div className="brands-container">
+          
+          <Row 
+            className="brands-row g-4" 
+            ref={scrollRef}
+            onScroll={handleScroll}
+          >
             {brands.map((brand) => (
-              <Col key={brand.id}>
+              <Col key={brand.id} className="brand-col">
                 <Card 
                   className={`brand-logo-card ${selectedBrand?.id === brand.id ? 'active' : ''}`}
                   onClick={() => setSelectedBrand(brand)}
@@ -151,15 +110,15 @@ const BrandScroller = () => {
                 </Card>
               </Col>
             ))}
-          </div>
-          {showBrandRightArrow && (
-            <div 
-              className="scroll-arrow right" 
-              onClick={() => handleBrandScroll('right')}
-            >
-              <i className="fas fa-chevron-right"></i>
-            </div>
-          )}
+          </Row>
+
+          <button 
+            className="scroll-arrow right" 
+            onClick={() => scroll('right', 'brands')}
+            aria-label="Scroll right"
+          >
+            <i className="fas fa-angle-right"></i>
+          </button>
         </div>
 
         {/* Products Grid */}
@@ -171,18 +130,21 @@ const BrandScroller = () => {
                 Browse more <i className="fas fa-arrow-right"></i>
               </button>
             </div>
-            <div className="products-grid">
-              {showProductLeftArrow && (
-                <div 
+            <div className="products-grid position-relative">
+              {showLeftArrow && (
+                <button 
                   className="scroll-arrow left" 
-                  onClick={() => handleProductScroll('left')}
+                  onClick={() => scroll('left', 'products')}
+                  aria-label="Scroll left"
                 >
-                  <i className="fas fa-chevron-left"></i>
-                </div>
+                  <i className="fas fa-angle-left"></i>
+                </button>
               )}
+              
               <div 
                 className="products-row" 
                 ref={productsRowRef}
+                onScroll={handleScroll}
               >
                 {products.map((product) => (
                   <div key={product.id} className="product-card-wrapper">
@@ -196,7 +158,7 @@ const BrandScroller = () => {
                         <Card.Title>{product.name}</Card.Title>
                         <Card.Text>{product.description}</Card.Text>
                         <div className="btn-container">
-                          <button className="btn btn-primary">
+                          <button className="btn btn-primary" onClick={() => handleQuotationClick(product)}>
                             {product.primary_button_text}
                           </button>
                           <button className="btn btn-outline-primary">
@@ -208,17 +170,22 @@ const BrandScroller = () => {
                   </div>
                 ))}
               </div>
-              {showProductRightArrow && (
-                <div 
-                  className="scroll-arrow right" 
-                  onClick={() => handleProductScroll('right')}
-                >
-                  <i className="fas fa-chevron-right"></i>
-                </div>
-              )}
+
+              <button 
+                className="scroll-arrow right" 
+                onClick={() => scroll('right', 'products')}
+                aria-label="Scroll right"
+              >
+                <i className="fas fa-angle-right  "></i>
+              </button>
             </div>
           </div>
         )}
+        <QuotationModal 
+          show={showQuotation}
+          onHide={() => setShowQuotation(false)}
+          product={selectedProduct}
+        />
       </Container>
     </div>
   );

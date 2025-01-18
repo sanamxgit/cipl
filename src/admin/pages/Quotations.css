@@ -1,0 +1,87 @@
+.quotations-container {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.quotations-container h2 {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.table {
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+  padding: 1rem;
+}
+
+.table td {
+  vertical-align: middle;
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.status-dropdown {
+  min-width: 100px;
+  text-align: center;
+}
+
+.status-badge {
+  min-width: 100px;
+  padding: 8px 12px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  display: inline-block;
+  text-align: center;
+}
+
+.dropdown-toggle.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #000;
+  font-weight: 500;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  width: 100px;
+}
+
+.dropdown-toggle.btn-warning:hover,
+.dropdown-toggle.btn-warning:focus {
+  background-color: #e0a800;
+  border-color: #e0a800;
+  color: #000;
+}
+
+.badge.bg-success {
+  background-color: #28a745 !important;
+  color: white;
+}
+
+.dropdown-toggle.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: #fff;
+}
+
+.dropdown-menu {
+  min-width: 100px;
+}
+
+.dropdown-item.active {
+  background-color: #19668A;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+} 

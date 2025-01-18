@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Container, Nav, Navbar, Dropdown } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './AdminLayout.css';
+import AutodeskManager from '../pages/AutodeskManager';
 
 const AdminLayout = ({ children }) => {
   const location = useLocation();
@@ -25,7 +28,12 @@ const AdminLayout = ({ children }) => {
         {/* Top Section */}
         <div className="sidebar-top">
           <div className="sidebar-logo">
-            <img src="/logo.png" alt="Logo" className="company-logo" />
+            <img 
+              src="/images/logo.png" 
+              alt="Logo" 
+              className="company-logo" 
+              style={{ height: '40px', width: 'auto' }}
+            />
             <button className="toggle-menu" onClick={toggleMenu}>
               <i className={`fas fa-${isMenuExpanded ? 'chevron-left' : 'chevron-right'}`}></i>
             </button>
@@ -89,7 +97,7 @@ const AdminLayout = ({ children }) => {
                 className={`nav-link ${isActive('/admin/product-page') ? 'active' : ''}`}
               >
                 <div className="nav-link-content">
-                  <img src="/icon-store.png" alt="" className="nav-icon" />
+                  <img src="/icon-products-page.png" alt="" className="nav-icon" />
                   <span>Product Page</span>
                 </div>
                 <i className="fas fa-angle-down dropdown-arrow"></i>
@@ -101,6 +109,13 @@ const AdminLayout = ({ children }) => {
                   className={isActive('/admin/microsoft-office') ? 'active' : ''}
                 >
                   Microsoft Office
+                </Dropdown.Item>
+                <Dropdown.Item 
+                  as={Link} 
+                  to="/admin/autodesk"
+                  className={isActive('/admin/autodesk') ? 'active' : ''}
+                >
+                  Autodesk
                 </Dropdown.Item>
                 {/* Add more product pages here as needed */}
               </Dropdown.Menu>
@@ -125,6 +140,7 @@ const AdminLayout = ({ children }) => {
                 <span>Settings</span>
               </div>
             </Link>
+
           </Nav>
         </div>
 
@@ -146,15 +162,10 @@ const AdminLayout = ({ children }) => {
       {/* Main Content */}
       <div className={`admin-main ${isMenuExpanded ? '' : 'expanded'}`}>
         <div className="admin-content">
-          {location.pathname === '/admin' ? (
-            <div className="dashboard-placeholder">
-              {/* Empty dashboard */}
-            </div>
-          ) : (
-            children
-          )}
+          {children}
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

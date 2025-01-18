@@ -1,0 +1,37 @@
+.admin-login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  padding: 20px;
+}
+
+.admin-login-card {
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.admin-login-logo {
+  height: 60px;
+  width: auto;
+}
+
+.admin-login-card .form-control {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.admin-login-card .btn-primary {
+  padding: 0.75rem;
+  border-radius: 8px;
+  background-color: #19668A;
+  border-color: #19668A;
+}
+
+.admin-login-card .btn-primary:hover {
+  background-color: #145274;
+  border-color: #145274;
+} 

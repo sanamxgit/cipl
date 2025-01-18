@@ -4,12 +4,26 @@
 
 .ms-hero-banner {
   position: relative;
-  height: 400px;
+  min-height: 60vh;
+  background-color: #000;
   background-size: cover;
   background-position: center;
   display: flex;
   align-items: center;
-  overflow: hidden;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.ms-hero-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
 }
 
 .ms-banner-overlay {
@@ -28,32 +42,41 @@
 }
 
 .ms-banner-content {
-  position: relative;
+  max-width: 800px;
+  color: #fff;
   z-index: 2;
-  padding: 0 5%;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
+  position: relative;
+}
+
+.ms-banner-content h1 {
+  font-size: 3.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.ms-banner-content p {
+  font-size: 1.25rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
 }
 
 .ms-category-selector {
-  background: white;
-  padding: 0;
+  background: #fff;
+  padding: 1rem 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  margin-bottom: 2rem;
 }
 
 .ms-category-buttons {
   display: flex;
   justify-content: center;
   gap: 2rem;
-  padding: 1rem 0;
 }
 
 .ms-category-btn {
-  padding: 1rem 2rem;
+  padding: 0.75rem 1.5rem;
   border: none;
   background: none;
   font-size: 1.1rem;
@@ -61,13 +84,11 @@
   cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: all 0.3s;
-  text-transform: uppercase;
-  font-weight: 500;
 }
 
 .ms-category-btn.active {
-  color: #0066cc;
-  border-bottom-color: #0066cc;
+  color: #0078d4;
+  border-bottom-color: #0078d4;
 }
 
 .ms-product-cards {
@@ -358,109 +379,126 @@
 
 /* Video section styles */
 .ms-video-section {
-  padding: 6rem 0;
-  background: #000;
-  overflow: hidden;
-  color: #fff;
   position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  padding: 4rem 0;
+  z-index: 1;
+}
+
+.ms-video-section.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .ms-video-container {
-  position: relative;
-  max-width: 100%;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
-  padding-left: 300px;
+  padding: 0 2rem;
 }
 
-.ms-video-row {
-  display: flex;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  gap: 24px;
-  padding: 40px 0;
-  margin: 0;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  scroll-snap-type: x mandatory;
+.ms-video-content {
+  text-align: center;
+  color: #fff;
+  margin-bottom: 3rem;
 }
 
-.ms-video-row::-webkit-scrollbar {
-  display: none;
+.ms-video-content h2 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
 }
 
-.ms-video-card {
-  flex: 0 0 auto;
-  width: 460px;
-  min-width: 460px;
-  background: #1a1a1a;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-  opacity: 0;
-  transform: translateY(50px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.ms-video-card.visible {
-  opacity: 1;
-  transform: translateY(0);
+.ms-video-content p {
+  font-size: 1.2rem;
+  opacity: 0.8;
 }
 
 .ms-video-wrapper {
   position: relative;
   width: 100%;
-  height: 280px;
+  border-radius: 16px;
   overflow: hidden;
-  background: #000;
-}
-
-.ms-video-thumbnail {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 1;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
 
 .ms-video-player {
-  position: absolute;
-  top: 0;
-  left: 0;
+  display: block;
   width: 100%;
-  height: 100%;
-  opacity: 1;
+  height: auto;
+  aspect-ratio: 16/9;
   object-fit: cover;
-  z-index: 2;
+  background: #000;
 }
 
-.ms-video-card.visible .ms-video-thumbnail {
-  opacity: 0;
+/* Add smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
 }
 
-.ms-video-card.visible .ms-video-player {
-  opacity: 1;
+/* Unlock Section */
+.ms-unlock-section {
+  padding: 6rem 0;
+  background: #fff;
+  text-align: center;
 }
 
-.ms-video-content {
-  padding: 1.5rem;
-  background: linear-gradient(to top, #000, transparent);
+.ms-unlock-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
-.ms-video-title {
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin-bottom: 0.8rem;
-  color: #fff;
+.ms-unlock-heading {
+  font-size: 2.5rem;
+  color: #2B5592;
+  margin-bottom: 1.5rem;
 }
 
-.ms-video-description {
-  font-size: 1rem;
-  color: #999;
-  line-height: 1.5;
+.ms-unlock-description {
+  font-size: 1.2rem;
+  color: #666;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
-.ms-video-card:hover .ms-video-player {
-  opacity: 1;
+/* Navbar Microsoft Logo */
+.navbar-microsoft-logo {
+  height: 40px;
+  margin-left: 1rem;
+}
+
+.category-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.tab-button {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #19668A;
+  background: transparent;
+  color: #19668A;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  min-width: 150px;
+}
+
+.tab-button:hover {
+  background: rgba(25, 102, 138, 0.1);
+}
+
+.tab-button.active {
+  background: #19668A;
+  color: white;
 } 

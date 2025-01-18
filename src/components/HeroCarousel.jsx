@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Carousel } from 'react-bootstrap';
-
+import QuotationModal from './QuotationModal';
 const HeroCarousel = () => {
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showQuotation, setShowQuotation] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     const fetchSlides = async () => {
@@ -31,6 +33,7 @@ const HeroCarousel = () => {
       }
     };
 
+
     fetchSlides();
   }, []);
 
@@ -51,6 +54,10 @@ const HeroCarousel = () => {
       </div>
     );
   }
+  const handleQuotationClick = (product) => {
+    setSelectedProduct(product);
+    setShowQuotation(true);
+  };
 
   return (
     <Carousel 
@@ -74,7 +81,7 @@ const HeroCarousel = () => {
                   <div className="carousel-product-card-content">
                     <h3>{slide.product_card.title}</h3>
                     <p>{slide.product_card.description}</p>
-                    <button className="btn btn-light">
+                    <button className="btn btn-light" onClick={() => handleQuotationClick(slide.product_card)}>
                       {slide.product_card.buttonText}
                     </button>
                   </div>
@@ -82,6 +89,12 @@ const HeroCarousel = () => {
               )}
             </div>
           </div>
+          <QuotationModal 
+            show={showQuotation}
+            onHide={() => setShowQuotation(false)}
+            selectedProduct={selectedProduct}
+            productType="Autodesk"
+          />
         </Carousel.Item>
       ))}
     </Carousel>

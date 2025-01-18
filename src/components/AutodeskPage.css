@@ -1,0 +1,319 @@
+.autodesk-page {
+  min-height: 100vh;
+}
+
+.hero-banner {
+  width: 100%;
+  height: 1080px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+  overflow: hidden;
+}
+
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1080px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.868) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.4) 100%);
+  z-index: 1;
+}
+
+.banner-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.banner-text {
+  max-width: 1000px;
+  position: relative;
+  z-index: 3;
+}
+
+.banner-text h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  line-height: 1.2;
+}
+
+.banner-text p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: #ffffff !important;
+  line-height: 1.6;
+  opacity: 0.9;
+  max-width: 900px;
+}
+
+.learn-more-btn {
+  padding: 15px 35px;
+  font-size: 1.1rem;
+  background: #19668A;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.learn-more-btn:hover {
+  background: #014a86;
+}
+
+.category-nav {
+  width: 100%;
+  padding: 20px 0;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 0;
+}
+
+.category-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  padding: 0 20px;
+  gap: 30px;
+}
+
+.category-btn {
+  padding: 12px 24px;
+  border: none;
+  background: none;
+  color: #333;
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.category-btn:hover {
+  color: #19668A;
+}
+
+.category-btn.active {
+  color: #19668A;
+  font-weight: 500;
+}
+
+.category-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #19668A;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Product Grid Styles */
+.products-section {
+  padding: 4rem 0;
+  background: #f8f9fa;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.product-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+  height: 380px;
+  width: 100%;
+  max-width: 380px;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-image {
+  height: 200px;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.05);
+}
+
+.product-content {
+  padding: 1.5rem;
+}
+
+.product-content h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: #2d3436;
+}
+
+.product-content p {
+  color: #636e72;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.product-price {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #19668A;
+  margin-bottom: 1rem;
+}
+
+/* FAQ Styles */
+.faq-section {
+  padding: 4rem 0;
+  background: #fff;
+}
+
+.faq-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.faq-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.faq-item {
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 0;
+}
+
+.faq-item:first-child {
+  border-top: 1px solid #e0e0e0;
+}
+
+.faq-question {
+  padding: 1.5rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background: transparent;
+}
+
+.faq-question h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background: transparent;
+  color: #666;
+}
+
+.faq-answer.active {
+  max-height: 500px;
+  padding: 0 0 1.5rem 0;
+}
+
+.primary-btn:hover {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.banner-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.banner-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: none;
+}
+
+.product-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.primary-btn, .secondary-btn {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.primary-btn {
+  background: #19668A;
+  color: white;
+  border: none;
+}
+
+.primary-btn:hover {
+  background: #154e6c; /* A slightly darker shade of #19668A */
+}
+
+.secondary-btn {
+  background: transparent;
+  color: #19668A;
+  border: 1px solid #19668A;
+}
+
+.secondary-btn:hover {
+  color: #FFC107;
+  border-color: #FFC107;
+}

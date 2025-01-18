@@ -1,76 +1,97 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import MicrosoftVideoSection from './MicrosoftVideoSection';
+import MicrosoftProducts from './MicrosoftProducts';
+import MicrosoftFeatures from './MicrosoftFeatures';
+import QuotationModal from './QuotationModal';
 import './MicrosoftOffice.css';
 
 const MicrosoftOffice = () => {
   const [pageData, setPageData] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [features, setFeatures] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [activeCategory, setActiveCategory] = useState('business');
+  const [showQuotation, setShowQuotation] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    const loadData = async () => {
+      try {
+        const [pageResponse, productsResponse] = await Promise.all([
+          axios.get('/backend/api/microsoft-office.php'),
+          axios.get(`/backend/api/microsoft-office.php?category=${activeCategory}`)
+        ]);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('/backend/api/microsoft-office.php');
-      console.log('Full API response:', response.data);
+        if (pageResponse.data.status === 'success') {
+          setPageData(pageResponse.data.data);
+        }
 
-      if (response.data.status === 'success') {
-        setPageData(response.data.data);
-      } else {
-        setError('Response status was not success');
+        if (productsResponse.data.status === 'success') {
+          setProducts(productsResponse.data.data.products || []);
+          setFeatures(productsResponse.data.data.features || []);
+        }
+      } catch (error) {
+        console.error('Error loading Microsoft Office data:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    loadData();
+  }, [activeCategory]);
+
+  const handleCategoryChange = (category) => {
+    setActiveCategory(category);
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  const handleQuotationClick = (product) => {
+    setSelectedProduct(product);
+    setShowQuotation(true);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="microsoft-office-view">
-      <div className="ms-video-section">
-        <div className="ms-video-container">
-          <div className="ms-video-row">
-            {pageData?.videos?.map((video) => (
-              <div key={video.id} className="ms-video-card visible">
-                <div className="ms-video-wrapper">
-                  {video.thumbnail_url && (
-                    <img
-                      className="ms-video-thumbnail"
-                      src={video.thumbnail_url}
-                      alt={video.title}
-                      onError={(e) => console.error('Thumbnail load error:', e)}
-                    />
-                  )}
-                  {video.video_url && (
-                    <video
-                      className="ms-video-player"
-                      src={video.video_url}
-                      playsInline
-                      muted
-                      loop
-                      autoPlay
-                      controls
-                      onError={(e) => console.error('Video load error:', e)}
-                    />
-                  )}
-                </div>
-                <div className="ms-video-content">
-                  <h3 className="ms-video-title">{video.title}</h3>
-                  <p className="ms-video-description">{video.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+    <div className="microsoft-office-page">
+      {/* Video Section */}
+      <MicrosoftVideoSection videoData={pageData?.video_section} />
+
+      {/* Category Tabs */}
+      <div className="category-tabs">
+        <button 
+          className={`tab-button ${activeCategory === 'business' ? 'active' : ''}`}
+          onClick={() => handleCategoryChange('business')}
+        >
+          For Business
+        </button>
+        <button 
+          className={`tab-button ${activeCategory === 'personal' ? 'active' : ''}`}
+          onClick={() => handleCategoryChange('personal')}
+        >
+          For Personal
+        </button>
       </div>
+
+      {/* Features Section */}
+      <div className="ms-features-wrapper">
+        <MicrosoftFeatures features={features} />
+      </div>
+
+      {/* Microsoft Products Section */}
+      <MicrosoftProducts 
+        products={products} 
+        onQuotationClick={handleQuotationClick}
+      />
+
+      <QuotationModal 
+        show={showQuotation}
+        onHide={() => setShowQuotation(false)}
+        selectedProduct={selectedProduct}
+        productType="Microsoft"
+      />
     </div>
   );
 };

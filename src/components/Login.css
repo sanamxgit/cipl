@@ -1,0 +1,80 @@
+.auth-modal .modal-content {
+  border-radius: 12px;
+}
+
+.auth-modal .modal-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.auth-modal .modal-body {
+  padding: 2rem;
+}
+
+.auth-modal .form-control {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.auth-modal .btn-primary {
+  padding: 0.75rem;
+  border-radius: 8px;
+  background-color: #19668A;
+  border-color: #19668A;
+}
+
+.auth-modal .btn-primary:hover {
+  background-color: #145274;
+  border-color: #145274;
+}
+
+.auth-modal .btn-link {
+  text-decoration: none;
+  color: #19668A;
+}
+
+.auth-modal .btn-link:hover {
+  color: #145274;
+}
+
+/* User avatar styles */
+.avatar-placeholder {
+  width: 32px;
+  height: 32px;
+  background-color: #19668A;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.user-name {
+  color: #333;
+  font-weight: 500;
+}
+
+.or-divider {
+  text-align: center;
+  position: relative;
+  margin: 1.5rem 0;
+}
+
+.or-divider::before,
+.or-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background: #dee2e6;
+}
+
+.or-divider::before {
+  left: 0;
+}
+
+.or-divider::after {
+  right: 0;
+} 

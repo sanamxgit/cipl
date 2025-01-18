@@ -1,27 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navbar, Nav, NavDropdown, Container, Form, Button } from 'react-bootstrap';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { login } from '../utils/auth';
+import { Link } from 'react-router-dom';
+import './Navigation.css';
+import Login from './Login';
 
 const Navigation = ({ microsoftLogo }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+  const [showLogin, setShowLogin] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [user, setUser] = useState(() => {
+    // Check localStorage on initial load
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
   const isProductView = location.pathname.startsWith('/products/');
 
-  const handleLogin = () => {
-    login();
-    navigate('/admin');
+  const handleLogin = (userData) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+    if (userData.role === 'admin') {
+      navigate('/admin');
+    }
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('user'); // Clear user data from localStorage
+    navigate('/'); // Redirect to home page
+  };
+
+  const handleShowLogin = (signup = false) => {
+    setIsSignUp(signup);
+    setShowLogin(true);
   };
 
   return (
     <Navbar bg="light" expand="lg" className="py-3">
       <Container>
         <div className="d-flex align-items-center">
-          <Navbar.Brand href="/" className="me-3">
-            <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-              Cyber International
-            </span>
+          <Navbar.Brand as={Link} to="/">
+            <img
+              src="/images/logo.png"
+              alt="Cyber International"
+              height="40"
+            />
           </Navbar.Brand>
           
           {isProductView && microsoftLogo && (
@@ -47,14 +73,15 @@ const Navigation = ({ microsoftLogo }) => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           {/* Left-aligned items */}
-          <Nav className="me-auto">
+          <Nav className="me-auto custom-nav">
             <NavDropdown 
               title="Products" 
               id="products-dropdown"
               className={`me-3 ${!isProductView && location.pathname === '/products' ? 'active' : ''}`}
             >
+              <NavDropdown.Item as={Link} to="/products/microsoft">Microsoft</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/products/autodesk">Autodesk</NavDropdown.Item>
               <NavDropdown.Item href="/products">All Products</NavDropdown.Item>
-              <NavDropdown.Item href="/products/microsoft">Microsoft Products</NavDropdown.Item>
               <NavDropdown.Item href="/products/adobe">Adobe Products</NavDropdown.Item>
             </NavDropdown>
 
@@ -69,7 +96,7 @@ const Navigation = ({ microsoftLogo }) => {
           </Nav>
 
           {/* Center-aligned items */}
-          <Nav className="mx-auto">
+          <Nav className="mx-auto custom-nav">
             <Nav.Link href="/" className="mx-2">Home</Nav.Link>
             <Nav.Link href="/blog" className="mx-2">Blog</Nav.Link>
             <Nav.Link href="/contacts" className="mx-2">Contacts</Nav.Link>
@@ -85,24 +112,57 @@ const Navigation = ({ microsoftLogo }) => {
                 aria-label="Search"
               />
             </Form>
-            <div className="d-flex align-items-center">
-              <Button 
-                variant="outline-primary" 
-                className="me-2"
-                onClick={handleLogin}
+            {!user ? (
+              <div className="d-flex align-items-center">
+                <Button 
+                  variant="outline-primary" 
+                  className="me-2 nav-btn"
+                  onClick={() => handleShowLogin(false)}
+                >
+                  Login
+                </Button>
+                <Button 
+                  variant="primary"
+                  className="nav-btn"
+                  onClick={() => handleShowLogin(true)}
+                >
+                  Get Started
+                </Button>
+              </div>
+            ) : (
+              <NavDropdown 
+                title={
+                  <div className="d-inline-flex align-items-center">
+                    <div className="user-avatar me-2">
+                      {user.image ? (
+                        <img src={user.image} alt={user.name} className="rounded-circle" width="32" />
+                      ) : (
+                        <div className="avatar-placeholder">
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
+                    <span className="user-name">{user.name}</span>
+                  </div>
+                }
+                id="user-dropdown"
+                align="end"
               >
-                Login
-              </Button>
-              <Button 
-                variant="primary"
-                style={{ minWidth: '120px' }}
-              >
-                Get Started
-              </Button>
-            </div>
+                <NavDropdown.Item as={Link} to="/account">Account Settings</NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
+              </NavDropdown>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>
+      <Login 
+        show={showLogin} 
+        onHide={() => setShowLogin(false)}
+        onLogin={handleLogin}
+        isSignUp={isSignUp}
+        setIsSignUp={setIsSignUp}
+      />
     </Navbar>
   );
 };

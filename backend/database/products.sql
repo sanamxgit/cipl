@@ -28,4 +28,9 @@ CREATE TABLE products (
 -- Add new columns to the products table
 ALTER TABLE products 
 ADD COLUMN primary_button_text VARCHAR(50) DEFAULT 'Plans & Pricing' AFTER price,
-ADD COLUMN secondary_button_text VARCHAR(50) DEFAULT 'Free Trial' AFTER primary_button_text; 
+ADD COLUMN secondary_button_text VARCHAR(50) DEFAULT 'Free Trial' AFTER primary_button_text;
+
+-- Add category_id column to products table if it doesn't exist
+ALTER TABLE products 
+ADD COLUMN category_id INT DEFAULT NULL,
+ADD FOREIGN KEY (category_id) REFERENCES autodesk_categories(id) ON DELETE SET NULL; 

@@ -59,9 +59,9 @@
 
 /* Products section */
 .products-section {
-    padding: 60px 0;
+    padding: 4rem 0;
+    background-color: #fff;
 }
-
 
 .products-section h3 {
     margin-bottom: 30px;
@@ -197,28 +197,85 @@
 /* Brand grid container */
 .brands-grid {
   position: relative;
-  overflow: visible;
   padding: 0 40px;
-  margin: 10px 0;
-  min-height: 220px;
-  background: white;
+  margin: 20px 0;
 }
 
-.brands-grid .row {
-  flex-wrap: nowrap;
+.brands-row {
+  display: flex;
   overflow-x: auto;
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+  gap: 2rem;
+  padding: 1rem 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 20px 0; /* Add padding to prevent cut-off */
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
-.brands-grid .row::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+.brands-row::-webkit-scrollbar {
+  display: none;
 }
 
-/* Navigation arrows for brand scroller */
+.brand-col {
+  flex: 0 0 auto;
+  width: 280px;
+  min-width: 280px;
+  padding: 0 10px;
+}
+
+.brand-logo-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #eee;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #fff;
+  width: 100%;
+}
+
+.brand-logo-card:hover,
+.brand-logo-card.active {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border-color: #0056b3;
+}
+
+.brand-logo {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 120px;
+  object-fit: contain;
+}
+
+/* Products styling */
+.products-grid {
+  padding: 0 40px;
+}
+
+.products-row {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 2rem;
+  padding: 1rem 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.products-row::-webkit-scrollbar {
+  display: none;
+}
+
+.product-card-wrapper {
+  flex: 0 0 auto;
+  width: 300px;
+}
+
 .scroll-arrow {
   position: absolute;
   top: 50%;
@@ -226,138 +283,51 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #19668A;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 100;
-  border: 1px solid #e0e0e0;
+  z-index: 10;
   transition: all 0.3s ease;
+  color: white;
 }
 
-.scroll-arrow::before {
-  content: '';
-  width: 10px;
-  height: 10px;
-  border-left: 2px solid var(--brand-color);
-  border-bottom: 2px solid var(--brand-color);
-  position: absolute;
-}
-
-.scroll-arrow.left {
-  left: -5px;
-}
-
-.scroll-arrow.right {
-  right: -5px;
-}
-
-.scroll-arrow.left::before {
-  transform: rotate(45deg); /* Left arrow direction */
-}
-
-.scroll-arrow.right::before {
-  transform: rotate(-135deg); /* Right arrow direction */
+.scroll-arrow i {
+  font-size: 1rem;
+  color: white;
 }
 
 .scroll-arrow:hover {
-  background-color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #b8bbbc;
   transform: translateY(-50%) scale(1.1);
-  z-index: 101;
 }
 
-/* Adjust brand card width */
-.brands-grid .col {
-  flex: 0 0 auto;
-  width: 280px !important;
-  padding: 0 20px;
-} 
-
-/* Update the product card button styles */
-.brand-products .card-footer .btn {
-  min-width: 160px; /* Increased width to fit "Plans & Pricing" */
-  white-space: nowrap;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
+/* Keep browse more arrow styles separate */
+.browse-more i {
+  font-size: 1rem;
+  margin-left: 0.5rem;
+  transition: transform 0.3s ease;
 }
 
-.brand-products .card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.browse-more:hover i {
+  transform: translateX(5px);
 }
 
-.brand-products .card:hover {
+.product-card {
+  height: 100%;
+  transition: transform 0.3s ease;
+  border: 1px solid #eee;
+}
+
+.product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.brand-products .card-footer {
-  padding: 1rem;
-  background: transparent;
-  border-top: none;
+.btn-container {
   display: flex;
-  gap: 0.75rem;
-  justify-content: flex-start;
-}
-
-/* Make sure the card is wide enough to fit the buttons */
-.brand-products .col-md-4 {
-  min-width: 340px;
-} 
-
-/* Update products grid and row styles */
-.products-grid {
-  position: relative;
-  overflow: visible;
-  padding: 0 40px;
-  margin: 10px 0;
-}
-
-.products-row {
-  display: flex;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  gap: 20px;
-  padding: 10px 15px;
-  margin: 0 -15px;
-}
-
-/* Hide scrollbars but keep functionality */
-.products-row::-webkit-scrollbar {
-  display: none;
-}
-
-.products-row {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Ensure product cards have proper sizing */
-.product-card-wrapper {
-  flex: 0 0 auto;
-  width: 340px;
-  padding: 0 15px;
-}
-
-/* Update scroll arrows for both brands and products */
-.products-grid .scroll-arrow,
-.brands-grid .scroll-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 100;
-}
-
-.products-grid .scroll-arrow.left,
-.brands-grid .scroll-arrow.left {
-  left: 0;
-}
-
-.products-grid .scroll-arrow.right,
-.brands-grid .scroll-arrow.right {
-  right: 0;
+  gap: 1rem;
+  margin-top: 1rem;
 } 

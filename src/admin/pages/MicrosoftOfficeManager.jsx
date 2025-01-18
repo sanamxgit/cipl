@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Form, Button, Tab, Tabs } from 'react-bootstrap';
 import axios from 'axios';
+import LivePreview from '../components/LivePreview';
 
 const formStyles = {
   input: {
@@ -22,73 +23,29 @@ const formStyles = {
 
 const MicrosoftOfficeManager = () => {
   const [formData, setFormData] = useState({
-    title: 'Get started with Microsoft Office 365 today',
-    subtitle: 'Collaborate, create, and achieve more with the world\'s leading productivity suite.',
+    title: '',
+    subtitle: '',
     banner_image: '',
     isImageUrl: false,
-    main_heading: 'Unlock productivity, creativity, and generative AI for your organization.',
-    main_description: 'Microsoft 365 empowers your employees to do their best work with the power of generative AI in the apps they use daily.',
+    main_heading: '',
+    main_description: '',
     floating_icons: [],
     plans: {
       home: {
         title: 'For Home',
-        cards: [
-          {
-            costText: 'Boost Productivity at a Cost That Works for You',
-            tag: 'Most Popular',
-            title: 'Microsoft 365 Business Basic',
-            sections: [
-              {
-                title: 'Manage Users with Ease',
-                items: [
-                  'Identity and access management for up to 300 employees',
-                  'Custom business email (you@yourbusiness.com)'
-                ],
-                icons: ['/icons/user.png', '/icons/email.png']
-              },
-              {
-                title: 'Office Tools on Web and Mobile',
-                items: [
-                  'Word, Excel, PowerPoint, and Outlook',
-                  'Web and Mobile Apps Only: Work from anywhere with seamless web and mobile access'
-                ],
-                icons: ['/icons/office.png', '/icons/web.png', '/icons/mobile.png']
-              },
-              {
-                title: 'Collaborate and Connect',
-                items: [
-                  'Chat, call, and video conference with Microsoft Teams',
-                  '1 TB cloud storage per employee on OneDrive',
-                  'Secure team communication with Teams, OneDrive, SharePoint, and Exchange'
-                ],
-                icons: ['/icons/teams.png', '/icons/cloud.png', '/icons/security.png']
-              }
-            ],
-            primaryButton: 'Plans & Pricing',
-            secondaryButton: 'Contact us'
-          }
-        ]
+        cards: []
       },
       business: {
         title: 'For Business',
-        cards: [
-          {
-            title: 'Microsoft 365 Business Basic',
-            subtitle: 'For small businesses',
-            tag: 'Best Value',
-            features: [
-              { text: 'Web and mobile versions of Office apps', icon: '/icons/office.png' },
-              { text: 'Email and calendar', icon: '/icons/outlook.png' },
-              { text: 'Teams for business', icon: '/icons/teams.png' },
-              { text: 'File sharing and storage', icon: '/icons/cloud.png' }
-            ],
-            primaryButton: 'Plans & Pricing',
-            secondaryButton: 'Contact us'
-          }
-        ]
+        cards: []
       }
     },
-    microsoftLogo: '/images/microsoft-logo.png'
+    microsoftLogo: '/images/microsoft-logo.png',
+    video_title: '',
+    video_description: '',
+    video_url: '',
+    video_thumbnail_url: '',
+    features: []
   });
 
   const [newVideo, setNewVideo] = useState({
@@ -100,9 +57,15 @@ const MicrosoftOfficeManager = () => {
   });
 
   const [editingVideo, setEditingVideo] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [features, setFeatures] = useState([]);
+  const [editingFeatures, setEditingFeatures] = useState({});
 
   useEffect(() => {
     fetchPageData();
+    fetchProducts();
+    fetchFeatures();
   }, []);
 
   const fetchPageData = async () => {
@@ -110,50 +73,85 @@ const MicrosoftOfficeManager = () => {
       const response = await axios.get('/backend/api/microsoft-office.php');
       if (response.data.status === 'success') {
         const data = response.data.data;
-        setFormData({
+        
+        // Ensure plans structure
+        const plans = {
+          home: {
+            title: 'For Home',
+            cards: []
+          },
+          business: {
+            title: 'For Business',
+            cards: []
+          },
+          ...data.plans
+        };
+
+        // Merge the fetched data with default structure
+        const mergedData = {
+          ...formData,
           ...data,
-          isImageUrl: Boolean(data.is_image_url)
-        });
+          plans,
+          // Ensure video fields are included
+          video_title: data.video_title || '',
+          video_description: data.video_description || '',
+          video_url: data.video_url || '',
+          video_thumbnail_url: data.video_thumbnail_url || ''
+        };
+
+        setFormData(mergedData);
       }
     } catch (error) {
       console.error('Error fetching page data:', error);
     }
   };
 
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('/backend/api/microsoft-products.php');
+      if (response.data.status === 'success') {
+        setProducts(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  const fetchFeatures = async () => {
+    try {
+      const response = await axios.get('/backend/api/microsoft-features.php');
+      if (response.data.status === 'success') {
+        setFeatures(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching features:', error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const saveButton = e.target.querySelector('button[type="submit"]');
-    
     try {
-        saveButton.disabled = true;
-        saveButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+      console.log('Submitting video data:', {
+        video_title: formData.video_title,
+        video_description: formData.video_description,
+        video_url: formData.video_url,
+        video_thumbnail_url: formData.video_thumbnail_url
+      });
 
-        // Log the data being sent
-        console.log('Sending data:', {
-            ...formData,
-            microsoftLogo: formData.microsoftLogo,
-            partnerLogo: formData.partnerLogo
-        });
+      const response = await axios.post('/backend/api/microsoft-office.php', {
+        ...formData,
+        video_title: formData.video_title,
+        video_description: formData.video_description,
+        video_url: formData.video_url,
+        video_thumbnail_url: formData.video_thumbnail_url
+      });
 
-        const response = await axios.post('/backend/api/microsoft-office.php', {
-            ...formData,
-            microsoftLogo: formData.microsoftLogo,
-            partnerLogo: formData.partnerLogo
-        });
-
-        if (response.data.status === 'success') {
-            alert('Changes saved successfully!');
-            await fetchPageData();
-        } else {
-            throw new Error(response.data.message || 'Failed to save changes');
-        }
+      if (response.data.status === 'success') {
+        alert('Changes saved successfully!');
+        await fetchPageData();
+      }
     } catch (error) {
-        console.error('Error saving:', error);
-        console.error('Error response:', error.response?.data);
-        alert(`Error saving changes: ${error.response?.data?.message || error.message}`);
-    } finally {
-        saveButton.disabled = false;
-        saveButton.innerHTML = 'Save Changes';
+      console.error('Error saving:', error);
     }
   };
 
@@ -561,6 +559,132 @@ const MicrosoftOfficeManager = () => {
     }
   };
 
+  const handleEditProduct = (product) => {
+    setEditingProduct(product);
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      try {
+        const response = await axios.post('/backend/api/microsoft-products.php', {
+          action: 'delete',
+          product_id: productId
+        });
+
+        if (response.data.status === 'success') {
+          alert('Product deleted successfully!');
+          fetchProducts(); // Refresh the products list
+        }
+      } catch (error) {
+        console.error('Error deleting product:', error);
+        alert('Failed to delete product');
+      }
+    }
+  };
+
+  const handleSaveProduct = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('/backend/api/microsoft-products.php', {
+        action: 'update',
+        product: editingProduct
+      });
+
+      if (response.data.status === 'success') {
+        alert('Product updated successfully!');
+        setEditingProduct(null);
+        fetchProducts(); // Refresh the products list
+      }
+    } catch (error) {
+      console.error('Error updating product:', error);
+      alert('Failed to update product');
+    }
+  };
+
+  const handleFeatureUpdate = async (feature) => {
+    try {
+      const response = await axios.post('/backend/api/microsoft-features.php', {
+        action: 'update',
+        ...feature
+      });
+      
+      if (response.data.status === 'success') {
+        fetchFeatures();
+        // Don't show alert for better UX
+      }
+    } catch (error) {
+      console.error('Error updating feature:', error);
+      alert('Failed to update feature');
+    }
+  };
+
+  const handleAddFeature = async () => {
+    try {
+      const newFeature = {
+        title: 'New Feature',
+        description: 'Feature description',
+        image_url: '',
+        link_url: '',
+        sort_order: features.length
+      };
+
+      const response = await axios.post('/backend/api/microsoft-features.php', {
+        action: 'add',
+        ...newFeature
+      });
+      
+      if (response.data.status === 'success') {
+        fetchFeatures();
+        alert('Feature added successfully');
+      }
+    } catch (error) {
+      console.error('Error adding feature:', error);
+      alert('Failed to add feature');
+    }
+  };
+
+  const handleRemoveFeature = async (id) => {
+    if (window.confirm('Are you sure you want to delete this feature?')) {
+      try {
+        const response = await axios.post('/backend/api/microsoft-features.php', {
+          action: 'delete',
+          id
+        });
+        
+        if (response.data.status === 'success') {
+          fetchFeatures();
+          alert('Feature deleted successfully');
+        }
+      } catch (error) {
+        console.error('Error deleting feature:', error);
+        alert('Failed to delete feature');
+      }
+    }
+  };
+
+  const handleFeatureInputChange = (feature, field, value) => {
+    setEditingFeatures(prev => ({
+      ...prev,
+      [feature.id]: {
+        ...prev[feature.id],
+        ...feature,
+        [field]: value
+      }
+    }));
+  };
+
+  const handleFeatureBlur = (featureId) => {
+    if (editingFeatures[featureId]) {
+      handleFeatureUpdate(editingFeatures[featureId]);
+      // Clear the temporary edit
+      setEditingFeatures(prev => {
+        const newState = { ...prev };
+        delete newState[featureId];
+        return newState;
+      });
+    }
+  };
+
   // Live Preview Panel
   const PreviewPanel = () => (
     <div className="preview-container" style={{ border: '1px solid #dee2e6', borderRadius: '4px' }}>
@@ -620,81 +744,32 @@ const MicrosoftOfficeManager = () => {
               <Tabs defaultActiveKey="general" className="mb-4">
                 <Tab eventKey="general" title="General">
                   <Form.Group className="mb-3">
-                    <Form.Label>Banner Image</Form.Label>
-                    <div className="mb-2">
-                      <Form.Check
-                        inline
-                        type="radio"
-                        name="imageSource"
-                        label="Upload File"
-                        id="upload-file"
-                        checked={!formData.isImageUrl}
-                        onChange={() => setFormData(prev => ({ ...prev, isImageUrl: false }))}
-                      />
-                      <Form.Check
-                        inline
-                        type="radio"
-                        name="imageSource"
-                        label="Image URL"
-                        id="image-url"
-                        checked={formData.isImageUrl}
-                        onChange={() => setFormData(prev => ({ ...prev, isImageUrl: true }))}
-                      />
-                    </div>
-
-                    {formData.isImageUrl ? (
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter image URL"
-                        value={formData.banner_image || ''}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          banner_image: e.target.value
-                        }))}
-                      />
-                    ) : (
-                      <Form.Control
-                        type="file"
-                        onChange={handleImageUpload}
-                        accept="image/*"
-                      />
-                    )}
-                    
-                    {formData.banner_image && (
-                      <div className="mt-2">
-                        <img 
-                          src={formData.banner_image}
-                          alt="Banner preview"
-                          className="mt-2"
-                          style={{ maxWidth: '100%', height: '100px', objectFit: 'cover' }}
-                        />
-                        <Button 
-                          variant="link" 
-                          className="p-0 ms-2 text-danger"
-                          onClick={() => setFormData(prev => ({ ...prev, banner_image: '' }))}
-                        >
-                          <i className="fas fa-times"></i> Remove
-                        </Button>
-                      </div>
-                    )}
-                  </Form.Group>
-
-                  <Form.Group className="mb-3">
-                    <Form.Label>Page Title</Form.Label>
+                    <Form.Label>Title</Form.Label>
                     <Form.Control
                       type="text"
                       value={formData.title}
                       onChange={(e) => setFormData({...formData, title: e.target.value})}
+                      placeholder="Get started with Microsoft Office 365 today"
                     />
                   </Form.Group>
 
                   <Form.Group className="mb-3">
                     <Form.Label>Subtitle</Form.Label>
                     <Form.Control
-                      as="textarea"
-                      rows={2}
+                      type="text"
                       value={formData.subtitle}
                       onChange={(e) => setFormData({...formData, subtitle: e.target.value})}
+                      placeholder="Collaborate, create, and achieve more..."
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                    <Form.Label>Banner Image URL</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={formData.banner_image}
+                      onChange={(e) => setFormData({...formData, banner_image: e.target.value})}
+                      placeholder="Enter banner image URL"
                     />
                   </Form.Group>
 
@@ -704,6 +779,7 @@ const MicrosoftOfficeManager = () => {
                       type="text"
                       value={formData.main_heading}
                       onChange={(e) => setFormData({...formData, main_heading: e.target.value})}
+                      placeholder="Unlock productivity, creativity..."
                     />
                   </Form.Group>
 
@@ -714,33 +790,26 @@ const MicrosoftOfficeManager = () => {
                       rows={3}
                       value={formData.main_description}
                       onChange={(e) => setFormData({...formData, main_description: e.target.value})}
+                      placeholder="Microsoft 365 empowers your employees..."
                     />
                   </Form.Group>
 
                   <Form.Group className="mb-3">
-                    <Form.Label>Microsoft Logo</Form.Label>
+                    <Form.Label>Microsoft Partner Logo</Form.Label>
                     <Form.Control
                       type="text"
                       value={formData.microsoftLogo}
-                      style={formStyles.input}
                       onChange={(e) => setFormData({...formData, microsoftLogo: e.target.value})}
+                      placeholder="Enter Microsoft Partner logo URL"
                     />
-                    {formData.microsoftLogo && (
-                      <img 
-                        src={formData.microsoftLogo} 
-                        alt="Microsoft Logo" 
-                        style={{ height: '40px', marginTop: '10px', width: 'auto' }} 
-                      />
-                    )}
                   </Form.Group>
                 </Tab>
 
                 <Tab eventKey="plans" title="Plans">
-                  {['home', 'business'].map(planType => (
-                    <div key={planType} className="mb-5">
-                      <h5 className="text-capitalize mb-3">{planType} Plans</h5>
-                      
-                      {formData.plans[planType].cards.map((card, cardIndex) => (
+                  {Object.entries(formData.plans || {}).map(([planType, planData]) => (
+                    <div key={planType} className="mb-4">
+                      <h6 className="mb-3">{planData.title}</h6>
+                      {(planData.cards || []).map((card, cardIndex) => (
                         <Card key={cardIndex} className="mb-4">
                           <Card.Body>
                             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -876,30 +945,38 @@ const MicrosoftOfficeManager = () => {
                   ))}
                 </Tab>
 
-                <Tab eventKey="videos" title="Videos">
-                  <div className="videos-section">
-                    <h5 className="mb-4">Manage Videos</h5>
-                    
-                    <Card className="mb-4">
-                      <Card.Body>
-                        <h6 className="mb-3">Add New Video</h6>
-                        <div>
+                <Tab eventKey="video" title="Video">
+                  <Card>
+                    <Card.Header>
+                      <h5 className="mb-0">Video Settings</h5>
+                    </Card.Header>
+                    <Card.Body>
+                      <Row>
+                        <Col md={8}>
                           <Form.Group className="mb-3">
-                            <Form.Label>Title</Form.Label>
+                            <Form.Label>Video Title</Form.Label>
                             <Form.Control
                               type="text"
-                              value={newVideo.title || ''}
-                              onChange={(e) => setNewVideo({...newVideo, title: e.target.value})}
+                              value={formData.video_title || ''}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                video_title: e.target.value
+                              })}
+                              placeholder="Enter video title"
                             />
                           </Form.Group>
 
                           <Form.Group className="mb-3">
-                            <Form.Label>Description</Form.Label>
+                            <Form.Label>Video Description</Form.Label>
                             <Form.Control
                               as="textarea"
                               rows={3}
-                              value={newVideo.description || ''}
-                              onChange={(e) => setNewVideo({...newVideo, description: e.target.value})}
+                              value={formData.video_description || ''}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                video_description: e.target.value
+                              })}
+                              placeholder="Enter video description"
                             />
                           </Form.Group>
 
@@ -907,9 +984,12 @@ const MicrosoftOfficeManager = () => {
                             <Form.Label>Video URL</Form.Label>
                             <Form.Control
                               type="text"
-                              value={newVideo.video_url || ''}
-                              onChange={(e) => setNewVideo({...newVideo, video_url: e.target.value})}
-                              placeholder="Enter video URL (YouTube, Vimeo, or direct video link)"
+                              value={formData.video_url || ''}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                video_url: e.target.value
+                              })}
+                              placeholder="Enter video URL (e.g., https://example.com/video.mp4)"
                             />
                           </Form.Group>
 
@@ -917,67 +997,193 @@ const MicrosoftOfficeManager = () => {
                             <Form.Label>Thumbnail URL</Form.Label>
                             <Form.Control
                               type="text"
-                              value={newVideo.thumbnail_url || ''}
-                              onChange={(e) => setNewVideo({...newVideo, thumbnail_url: e.target.value})}
-                              placeholder="Enter thumbnail image URL"
+                              value={formData.video_thumbnail_url || ''}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                video_thumbnail_url: e.target.value
+                              })}
+                              placeholder="Enter thumbnail URL (e.g., https://example.com/thumbnail.jpg)"
                             />
                           </Form.Group>
+                        </Col>
 
-                          <Form.Group className="mb-3">
-                            <Form.Label>Sort Order</Form.Label>
-                            <Form.Control
-                              type="number"
-                              value={newVideo.sort_order || 0}
-                              onChange={(e) => setNewVideo({...newVideo, sort_order: parseInt(e.target.value)})}
-                            />
-                          </Form.Group>
-
-                          <Button variant="primary" onClick={handleAddVideo}>
-                            Add Video
-                          </Button>
-                        </div>
-                      </Card.Body>
-                    </Card>
-
-                    <div className="videos-list">
-                      {formData.videos?.map((video) => (
-                        <Card key={video.id} className="mb-3">
-                          <Card.Body>
-                            <div className="d-flex justify-content-between align-items-start">
-                              <div className="d-flex gap-3">
-                                <img 
-                                  src={video.thumbnail_url}
-                                  alt={video.title} 
-                                  style={{ width: '120px', height: '68px', objectFit: 'cover', borderRadius: '4px' }} 
+                        <Col md={4}>
+                          <div className="preview-section">
+                            <h6 className="mb-3">Preview</h6>
+                            {formData.video_thumbnail_url ? (
+                              <div className="thumbnail-preview">
+                                <img
+                                  src={formData.video_thumbnail_url}
+                                  alt="Video thumbnail"
+                                  style={{
+                                    width: '100%',
+                                    height: 'auto',
+                                    borderRadius: '8px',
+                                    marginBottom: '1rem'
+                                  }}
                                 />
-                                <div>
-                                  <h6>{video.title}</h6>
-                                  <p className="text-muted small mb-0">{video.description}</p>
-                                  <small className="text-muted">Video URL: {video.video_url}</small>
+                              </div>
+                            ) : (
+                              <div className="no-preview">
+                                <p className="text-muted">No thumbnail preview available</p>
+                              </div>
+                            )}
+                          </div>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </Tab>
+
+                <Tab eventKey="products" title="Products">
+                  <div className="products-section">
+                    <h5 className="mb-4">Microsoft Products</h5>
+                    <Card>
+                      <Card.Body>
+                        {editingProduct ? (
+                          <Form onSubmit={handleSaveProduct}>
+                            <Form.Group className="mb-3">
+                              <Form.Label>Product Name</Form.Label>
+                              <Form.Control
+                                type="text"
+                                value={editingProduct.name}
+                                onChange={(e) => setEditingProduct({
+                                  ...editingProduct,
+                                  name: e.target.value
+                                })}
+                              />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                              <Form.Label>Description</Form.Label>
+                              <Form.Control
+                                as="textarea"
+                                rows={3}
+                                value={editingProduct.description}
+                                onChange={(e) => setEditingProduct({
+                                  ...editingProduct,
+                                  description: e.target.value
+                                })}
+                              />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                              <Form.Label>Price</Form.Label>
+                              <Form.Control
+                                type="number"
+                                value={editingProduct.price}
+                                onChange={(e) => setEditingProduct({
+                                  ...editingProduct,
+                                  price: e.target.value
+                                })}
+                              />
+                            </Form.Group>
+                            <div className="d-flex gap-2">
+                              <Button type="submit" variant="primary">
+                                Save Changes
+                              </Button>
+                              <Button 
+                                variant="secondary"
+                                onClick={() => setEditingProduct(null)}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </Form>
+                        ) : (
+                          <div className="products-grid">
+                            {products.map((product) => (
+                              <div key={product.id} className="product-item">
+                                <img src={product.image_url} alt={product.name} />
+                                <div className="product-details">
+                                  <h6>{product.name}</h6>
+                                  <p>{product.description}</p>
+                                  <div className="product-price">${product.price}</div>
+                                </div>
+                                <div className="product-actions">
+                                  <Button 
+                                    variant="outline-primary" 
+                                    size="sm"
+                                    onClick={() => handleEditProduct(product)}
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button 
+                                    variant="outline-danger" 
+                                    size="sm"
+                                    onClick={() => handleDeleteProduct(product.id)}
+                                  >
+                                    Delete
+                                  </Button>
                                 </div>
                               </div>
-                              <div className="d-flex gap-2">
-                                <Button 
-                                  variant="outline-primary" 
-                                  size="sm"
-                                  onClick={() => handleEditVideo(video)}
-                                >
-                                  Edit
-                                </Button>
-                                <Button 
-                                  variant="outline-danger" 
-                                  size="sm"
-                                  onClick={() => handleDeleteVideo(video.id)}
-                                >
-                                  Delete
-                                </Button>
-                              </div>
-                            </div>
-                          </Card.Body>
-                        </Card>
-                      ))}
-                    </div>
+                            ))}
+                          </div>
+                        )}
+                      </Card.Body>
+                    </Card>
                   </div>
+                </Tab>
+
+                <Tab eventKey="features" title="Features">
+                  <Card>
+                    <Card.Body>
+                      <h5 className="mb-4">Microsoft 365 Features</h5>
+                      <Button 
+                        variant="primary"
+                        className="mb-4"
+                        onClick={handleAddFeature}
+                      >
+                        Add New Feature
+                      </Button>
+                      {features.map((feature) => (
+                        <div key={feature.id} className="feature-item mb-4 p-3 border rounded">
+                          <Form.Group className="mb-3">
+                            <Form.Label>Feature Title</Form.Label>
+                            <Form.Control
+                              type="text"
+                              value={editingFeatures[feature.id]?.title ?? feature.title}
+                              onChange={(e) => handleFeatureInputChange(feature, 'title', e.target.value)}
+                              onBlur={() => handleFeatureBlur(feature.id)}
+                            />
+                          </Form.Group>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control
+                              as="textarea"
+                              rows={3}
+                              value={editingFeatures[feature.id]?.description ?? feature.description}
+                              onChange={(e) => handleFeatureInputChange(feature, 'description', e.target.value)}
+                              onBlur={() => handleFeatureBlur(feature.id)}
+                            />
+                          </Form.Group>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Image URL</Form.Label>
+                            <Form.Control
+                              type="text"
+                              value={editingFeatures[feature.id]?.image_url ?? feature.image_url}
+                              onChange={(e) => handleFeatureInputChange(feature, 'image_url', e.target.value)}
+                              onBlur={() => handleFeatureBlur(feature.id)}
+                            />
+                          </Form.Group>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Link URL</Form.Label>
+                            <Form.Control
+                              type="text"
+                              value={editingFeatures[feature.id]?.link_url ?? feature.link_url}
+                              onChange={(e) => handleFeatureInputChange(feature, 'link_url', e.target.value)}
+                              onBlur={() => handleFeatureBlur(feature.id)}
+                            />
+                          </Form.Group>
+                          <Button 
+                            variant="danger" 
+                            size="sm"
+                            onClick={() => handleRemoveFeature(feature.id)}
+                          >
+                            Remove Feature
+                          </Button>
+                        </div>
+                      ))}
+                    </Card.Body>
+                  </Card>
                 </Tab>
               </Tabs>
 
@@ -995,7 +1201,7 @@ const MicrosoftOfficeManager = () => {
             <h5 className="mb-0">Live Preview</h5>
           </Card.Header>
           <Card.Body className="p-0">
-            <PreviewPanel />
+            <LivePreview formData={formData} />
           </Card.Body>
         </Card>
       </Col>

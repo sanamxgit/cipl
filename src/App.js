@@ -30,6 +30,10 @@ import ProductView from './components/ProductView';
 import ProductCategoryView from './components/ProductCategoryView';
 import ProductCategoryManager from './admin/pages/ProductCategoryManager';
 import MicrosoftOfficeManager from './admin/pages/MicrosoftOfficeManager';
+import AutodeskManager from './admin/pages/AutodeskManager';
+import AutodeskPage from './components/AutodeskPage';
+import Quotations from './admin/pages/Quotations';
+
 
 const ProtectedRoute = ({ children }) => {
   if (!isAuthenticated()) {
@@ -85,13 +89,14 @@ function App() {
             </>
           } />
           <Route path="/products/microsoft" element={<ProductCategoryView />} />
+          <Route path="/products/autodesk" element={<AutodeskPage />} />
           <Route path="/products/:slug" element={<ProductView />} />
           <Route path="/products/:category" element={<ProductCategoryView />} />
           <Route path="/admin/*" element={
             <ProtectedRoute>
               <AdminLayout>
                 <Routes>
-                  <Route index element={<AdminHome />} />
+                  <Route index element={<Quotations />} />
                   <Route path="carousels" element={<AdminHome />} />
                   <Route path="brands" element={<BrandsManager />} />
                   <Route path="products" element={<ProductsManager />} />
@@ -103,6 +108,7 @@ function App() {
                   <Route path="footer" element={<FooterManager />} />
                   <Route path="product-categories" element={<ProductCategoryManager />} />
                   <Route path="microsoft-office" element={<MicrosoftOfficeManager />} />
+                  <Route path="autodesk" element={<AutodeskManager />} />``
                 </Routes>
               </AdminLayout>
             </ProtectedRoute>

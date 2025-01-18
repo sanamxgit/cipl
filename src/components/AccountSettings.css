@@ -1,0 +1,44 @@
+.account-settings-container {
+  padding: 2rem 0;
+  max-width: 600px;
+}
+
+.account-settings-card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.account-settings-card .card-header {
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 1.5rem;
+}
+
+.account-settings-card .card-body {
+  padding: 2rem;
+}
+
+.account-settings-card .form-control {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.account-settings-card .btn-primary {
+  padding: 0.75rem 2rem;
+  background-color: #19668A;
+  border-color: #19668A;
+}
+
+.account-settings-card .btn-primary:hover {
+  background-color: #145274;
+  border-color: #145274;
+}
+
+.account-settings-card hr {
+  opacity: 0.1;
+}
+
+.account-settings-card h5 {
+  color: #333;
+  font-weight: 500;
+} 

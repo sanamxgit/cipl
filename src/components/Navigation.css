@@ -17,4 +17,252 @@
   padding-left: 1rem;
   width: 200px;
   border: 1px solid #e2e8f0;
+}
+
+.navbar-logo {
+  height: 50px;
+  width: auto;
+}
+
+.custom-nav .nav-link {
+  color: #333 !important;
+  transition: color 0.3s ease;
+}
+
+.custom-nav .nav-link:hover {
+  color: #19668A !important;
+}
+
+.custom-nav .dropdown-item {
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.custom-nav .dropdown-item:hover {
+  color: #19668A;
+  background-color: #bebebe !important;
+}
+
+.nav-link.active {
+  color: #19668A !important;
+}
+
+.dropdown-toggle::after {
+  transition: transform 0.3s ease;
+}
+
+.dropdown:hover .dropdown-toggle::after {
+  transform: rotate(180deg);
+}
+
+.custom-nav .dropdown-toggle {
+  font-weight: normal !important;
+  padding-right: 2rem !important;
+  position: relative;
+  color: #333 !important;
+  transition: color 0.3s ease;
+}
+
+.custom-nav .dropdown-toggle::after {
+  display: inline-block !important;
+  margin-left: 0.5em;
+  vertical-align: middle;
+  content: "";
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease;
+  color: #333;
+}
+
+.custom-nav .dropdown-toggle:hover::after {
+  transform: translateY(-50%) rotate(180deg);
+  color: #19668A;
+}
+
+.custom-nav .nav-link:hover,
+.custom-nav .dropdown-toggle:hover {
+  color: #19668A !important;
+}
+
+.nav-link.active,
+.dropdown-toggle.active {
+  color: #19668A !important;
+}
+
+/* Remove or update conflicting styles first */
+.nav-link:hover,
+.nav-link.active,
+.dropdown-toggle.nav-link:hover,
+.dropdown-toggle.nav-link.active {
+  background: transparent !important;
+  color: #19668A !important;
+}
+
+/* Style for dropdown titles */
+#products-dropdown,
+#services-dropdown {
+  color: #333 !important;
+  transition: color 0.3s ease;
+}
+
+#products-dropdown:hover,
+#services-dropdown:hover {
+  color: #19668A !important;
+  background-color: transparent !important;
+}
+
+/* Style for dropdown items */
+.dropdown-item {
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+  color: #19668A;
+  background-color: #c1c1c1 !important;
+}
+
+/* Remove any other conflicting styles */
+.custom-nav .dropdown-toggle:hover,
+.custom-nav .dropdown-item:hover,
+.custom-nav .nav-link:hover {
+  background-color: transparent !important;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .dropdown-toggle:hover {
+  color: #19668A !important;
+  background-color: transparent !important;
+}
+
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.dropdown-item:hover {
+  background-color: rgba(25, 102, 138, 0.1) !important;
+}
+
+/* Style for dropdown titles (Products, Services) */
+.custom-nav .dropdown-toggle {
+  font-weight: normal !important;
+  padding-right: 2rem !important;
+  position: relative;
+  color: #333 !important;
+  transition: color 0.3s ease;
+}
+
+/* Hover color for dropdown titles */
+.custom-nav .dropdown-toggle:hover {
+  color: #19668A !important;
+}
+
+/* Style for dropdown items */
+.custom-nav .dropdown-item {
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+/* Hover style for dropdown items */
+.custom-nav .dropdown-item:hover {
+  color: #19668A;
+  background-color: #ffffff55 !important;
+}
+
+/* Arrow color change on hover */
+.custom-nav .dropdown-toggle:hover::after {
+  transform: translateY(-50%) rotate(180deg);
+  color: #19668A;
+}
+
+/* Remove any conflicting styles */
+.navbar-nav .dropdown-toggle:hover {
+  background-color: transparent !important;
+}
+
+/* Button styles */
+.nav-btn {
+  min-width: 120px;
+  padding: 8px 24px;
+  transition: all 0.3s ease;
+}
+
+/* Primary button (Get Started) */
+.btn-primary {
+  background-color: #19668A !important;
+  border-color: #19668A !important;
+}
+
+.btn-primary:hover {
+  background-color: #145274 !important;
+  border-color: #145274 !important;
+}
+
+/* Outline button (Login) */
+.btn-outline-primary {
+  color: #19668A !important;
+  border-color: #19668A !important;
+}
+
+.btn-outline-primary:hover {
+  color: white !important;
+  background-color: #19668A !important;
+}
+
+/* User dropdown styles */
+#user-dropdown {
+  padding: 0;
+}
+
+.dropdown-menu {
+  min-width: 200px;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #19668A;
+}
+
+.dropdown-divider {
+  margin: 0.5rem 0;
+}
+
+/* User avatar styles */
+.user-avatar {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-placeholder {
+  width: 32px;
+  height: 32px;
+  background-color: #19668A;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.user-name {
+  color: #333;
+  font-weight: 500;
+  margin-left: 0.5rem;
 } 

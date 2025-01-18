@@ -3,12 +3,15 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 import axios from 'axios';
 import { useFeatured } from '../context/FeaturedContext';
 import './FeaturedProducts.css';
+import QuotationModal from './QuotationModal';
 
 const FeaturedProducts = () => {
   const { selectedFeaturedBrand } = useFeatured();
   const [products, setProducts] = useState([]);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const productsRowRef = useRef(null);
+  const [showQuotation, setShowQuotation] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     fetchProducts();
@@ -36,6 +39,11 @@ const FeaturedProducts = () => {
   const handleScroll = (e) => {
     const container = e.target;
     setShowLeftArrow(container.scrollLeft > 0);
+  };
+
+  const handleQuotationClick = (product) => {
+    setSelectedProduct(product);
+    setShowQuotation(true);
   };
 
   const scroll = (direction) => {
@@ -83,7 +91,7 @@ const FeaturedProducts = () => {
                     <Card.Title>{product.name}</Card.Title>
                     <Card.Text>{product.description}</Card.Text>
                     <div className="btn-container">
-                      <button className="btn btn-primary">
+                      <button className="btn btn-primary" onClick={() => handleQuotationClick(product)}>
                         {product.primary_button_text}
                       </button>
                       <button className="btn btn-outline-primary">
@@ -104,6 +112,12 @@ const FeaturedProducts = () => {
             <i className="fas fa-angle-right"></i>
           </button>
         </div>
+        <QuotationModal 
+          show={showQuotation}
+          onHide={() => setShowQuotation(false)}
+          selectedProduct={selectedProduct}
+          productType="Autodesk"
+        />
       </Container>
     </section>
   );
