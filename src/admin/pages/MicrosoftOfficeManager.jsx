@@ -58,6 +58,7 @@ const MicrosoftOfficeManager = () => {
   });
 
   const [editingVideo, setEditingVideo] = useState(null);
+  const [videos, setVideos] = useState([]);
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [features, setFeatures] = useState([]);
@@ -70,12 +71,22 @@ const MicrosoftOfficeManager = () => {
     sort_order: 0,
     is_active: true
   });
+  const [contactInfo, setContactInfo] = useState({
+    phone_number: '+977-980000000',
+    email: 'service@cipl.com',
+    chat_title: 'Chat Now',
+    chat_description: 'Chat with our support team for quick answers on product features, pricing and more.',
+    call_title: 'Call Us',
+    call_description: 'Call Our Award Winning Support 24/7'
+  });
 
   useEffect(() => {
     fetchPageData();
     fetchProducts();
     fetchFeatures();
     fetchFAQs();
+    fetchVideos();
+    fetchContactInfo();
   }, []);
 
   const fetchPageData = async () => {
@@ -112,6 +123,7 @@ const MicrosoftOfficeManager = () => {
         };
 
         setFormData(mergedData);
+        setVideos(Array.isArray(data.videos) ? data.videos : []);
       }
     } catch (error) {
       console.error('Error fetching page data:', error);
@@ -148,6 +160,18 @@ const MicrosoftOfficeManager = () => {
       }
     } catch (error) {
       console.error('Error fetching FAQs:', error);
+    }
+  };
+
+  const fetchVideos = async () => {
+    try {
+      const response = await axios.get('/microsoft-video-section.php');
+      if (response.data.status === 'success') {
+        setVideos(response.data.data ? [response.data.data] : []);
+      }
+    } catch (error) {
+      console.error('Error fetching videos:', error);
+      setVideos([]);
     }
   };
 
@@ -582,37 +606,35 @@ const MicrosoftOfficeManager = () => {
   };
 
   const handleAddVideo = async () => {
+    if (!formData.video_title || !formData.video_url) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
     try {
-      // Validate required fields
-      if (!newVideo.title || !newVideo.video_url || !newVideo.thumbnail_url) {
-        alert('Please fill in all required fields (title, video URL, and thumbnail URL)');
-        return;
-      }
-
-      const response = await axios.post('/microsoft-office.php', {
-        action: 'add_video',
-        title: newVideo.title,
-        description: newVideo.description || '',
-        video_url: newVideo.video_url,
-        thumbnail_url: newVideo.thumbnail_url,
-        sort_order: newVideo.sort_order || 0
-      });
-
+      const videoData = {
+        title: formData.video_title,
+        description: formData.video_description,
+        video_url: formData.video_url,
+        thumbnail_url: formData.video_thumbnail_url,
+        sort_order: 0
+      };
+      
+      const response = await axios.post('/microsoft-video-section.php', videoData);
       if (response.data.status === 'success') {
-        alert('Video added successfully!');
-        setNewVideo({
-          title: '',
-          description: '',
+        setFormData({
+          ...formData,
+          video_title: '',
+          video_description: '',
           video_url: '',
-          thumbnail_url: '',
-          sort_order: 0
+          video_thumbnail_url: ''
         });
-        fetchPageData();
+        fetchVideos();
+        alert('Video added successfully!');
       }
     } catch (error) {
       console.error('Error adding video:', error);
-      console.error('Error response:', error.response?.data);
-      alert(`Error adding video: ${error.response?.data?.message || error.message}`);
+      alert('Error adding video');
     }
   };
 
@@ -620,45 +642,57 @@ const MicrosoftOfficeManager = () => {
     setEditingVideo(video);
   };
 
-  const handleSaveEdit = async () => {
-    try {
-      const response = await axios.post('/microsoft-office.php', {
-        action: 'update_video',
-        video_id: editingVideo.id,
-        title: editingVideo.title,
-        description: editingVideo.description,
-        video_url: editingVideo.video_url,
-        thumbnail_url: editingVideo.thumbnail_url,
-        sort_order: editingVideo.sort_order || 0
-      });
+  const handleSaveEdit = async (videoId) => {
+    if (!editingVideo) return;
 
+    try {
+      const response = await axios.put('/microsoft-video-section.php', editingVideo);
       if (response.data.status === 'success') {
-        alert('Video updated successfully!');
         setEditingVideo(null);
-        fetchPageData();
+        fetchVideos();
+        alert('Video updated successfully!');
       }
     } catch (error) {
       console.error('Error updating video:', error);
-      alert(`Error updating video: ${error.response?.data?.message || error.message}`);
+      alert('Error updating video');
+    }
+  };
+
+  const fetchContactInfo = async () => {
+    try {
+      const response = await axios.get('/contact-info.php');
+      if (response.data.status === 'success') {
+        setContactInfo(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching contact info:', error);
+    }
+  };
+
+  const handleUpdateContactInfo = async () => {
+    try {
+      const response = await axios.put('/contact-info.php', contactInfo);
+      if (response.data.status === 'success') {
+        alert('Contact information updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating contact info:', error);
+      alert('Error updating contact information');
     }
   };
 
   const handleDeleteVideo = async (videoId) => {
-    if (window.confirm('Are you sure you want to delete this video?')) {
-      try {
-        const response = await axios.post('/microsoft-office.php', {
-          action: 'delete_video',
-          video_id: videoId
-        });
+    if (!window.confirm('Are you sure you want to delete this video?')) return;
 
-        if (response.data.status === 'success') {
-          alert('Video deleted successfully!');
-          fetchPageData();
-        }
-      } catch (error) {
-        console.error('Error deleting video:', error);
-        alert(`Error deleting video: ${error.response?.data?.message || error.message}`);
+    try {
+      const response = await axios.delete('/microsoft-video-section.php', { data: { id: videoId } });
+      if (response.data.status === 'success') {
+        fetchVideos();
+        alert('Video deleted successfully!');
       }
+    } catch (error) {
+      console.error('Error deleting video:', error);
+      alert('Error deleting video');
     }
   };
 
@@ -1049,13 +1083,96 @@ const MicrosoftOfficeManager = () => {
                 </Tab>
 
                 <Tab eventKey="video" title="Video">
-                  <Card>
-                    <Card.Header>
-                      <h5 className="mb-0">Video Settings</h5>
-                    </Card.Header>
-                    <Card.Body>
+                  <div className="video-settings">
+                    <Card>
+                      <Card.Header>
+                        <h5 className="mb-0">Video Settings</h5>
+                      </Card.Header>
+                      <Card.Body>
                       <Row>
                         <Col md={8}>
+                          {/* Existing videos list */}
+                          {videos && videos.length > 0 && (
+                            <div className="mb-4">
+                              <h6 className="mb-3">Existing Videos</h6>
+                              <div className="d-flex flex-column gap-3">
+                                {videos.map((v) => (
+                                  <Card key={v.id}>
+                                    <Card.Body className="d-flex align-items-center justify-content-between">
+                                      <div>
+                                        <div className="fw-semibold">{v.title || 'Untitled'}</div>
+                                        <div className="text-muted small">{v.description || ''}</div>
+                                        <div className="text-muted small">Video: {v.video_url}</div>
+                                        <div className="text-muted small">Thumbnail: {v.thumbnail_url}</div>
+                                      </div>
+                                      <div className="d-flex gap-2">
+                                        <Button size="sm" variant="outline-primary" onClick={() => handleEditVideo(v)}>Edit</Button>
+                                        <Button size="sm" variant="outline-danger" onClick={() => handleDeleteVideo(v.id)}>Delete</Button>
+                                      </div>
+                                    </Card.Body>
+                                  </Card>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Edit existing video */}
+                          {editingVideo && (
+                            <Card className="mb-4">
+                              <Card.Header>
+                                <h6 className="mb-0">Edit Video</h6>
+                              </Card.Header>
+                              <Card.Body>
+                                <Form.Group className="mb-3">
+                                  <Form.Label>Title</Form.Label>
+                                  <Form.Control
+                                    type="text"
+                                    value={editingVideo.title || ''}
+                                    onChange={(e) => setEditingVideo({ ...editingVideo, title: e.target.value })}
+                                  />
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                  <Form.Label>Description</Form.Label>
+                                  <Form.Control
+                                    as="textarea"
+                                    rows={3}
+                                    value={editingVideo.description || ''}
+                                    onChange={(e) => setEditingVideo({ ...editingVideo, description: e.target.value })}
+                                  />
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                  <Form.Label>Video URL</Form.Label>
+                                  <Form.Control
+                                    type="text"
+                                    value={editingVideo.video_url || ''}
+                                    onChange={(e) => setEditingVideo({ ...editingVideo, video_url: e.target.value })}
+                                  />
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                  <Form.Label>Thumbnail URL</Form.Label>
+                                  <Form.Control
+                                    type="text"
+                                    value={editingVideo.thumbnail_url || ''}
+                                    onChange={(e) => setEditingVideo({ ...editingVideo, thumbnail_url: e.target.value })}
+                                  />
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                  <Form.Label>Sort Order</Form.Label>
+                                  <Form.Control
+                                    type="number"
+                                    value={editingVideo.sort_order ?? 0}
+                                    onChange={(e) => setEditingVideo({ ...editingVideo, sort_order: parseInt(e.target.value || '0', 10) })}
+                                  />
+                                </Form.Group>
+                                <div className="d-flex gap-2">
+                                  <Button variant="success" onClick={() => handleSaveEdit(editingVideo.id)}>Save</Button>
+                                  <Button variant="secondary" onClick={() => setEditingVideo(null)}>Cancel</Button>
+                                </div>
+                              </Card.Body>
+                            </Card>
+                          )}
+
+                          {/* Add new video */}
                           <Form.Group className="mb-3">
                             <Form.Label>Video Title</Form.Label>
                             <Form.Control
@@ -1108,6 +1225,9 @@ const MicrosoftOfficeManager = () => {
                               placeholder="Enter thumbnail URL (e.g., https://example.com/thumbnail.jpg)"
                             />
                           </Form.Group>
+                          <div className="d-flex gap-2">
+                            <Button variant="primary" onClick={handleAddVideo}>Add Video</Button>
+                          </div>
                         </Col>
 
                         <Col md={4}>
@@ -1136,6 +1256,7 @@ const MicrosoftOfficeManager = () => {
                       </Row>
                     </Card.Body>
                   </Card>
+                  </div>
                 </Tab>
 
                 <Tab eventKey="products" title="Products">
@@ -1461,6 +1582,98 @@ const MicrosoftOfficeManager = () => {
                       </div>
                     </Card.Body>
                   </Card>
+                </Tab>
+
+                <Tab eventKey="contact" title="Contact Info">
+                  <div className="contact-info-section">
+                    <Card>
+                      <Card.Header>
+                        <h5 className="mb-0">Contact Information Settings</h5>
+                      </Card.Header>
+                      <Card.Body>
+                        <Row>
+                          <Col md={6}>
+                            <Form.Group className="mb-3">
+                              <Form.Label>Phone Number</Form.Label>
+                              <Form.Control
+                                type="text"
+                                value={contactInfo.phone_number || ''}
+                                onChange={(e) => setContactInfo({...contactInfo, phone_number: e.target.value})}
+                                placeholder="+977-980000000"
+                              />
+                            </Form.Group>
+                          </Col>
+                          <Col md={6}>
+                            <Form.Group className="mb-3">
+                              <Form.Label>Email Address</Form.Label>
+                              <Form.Control
+                                type="email"
+                                value={contactInfo.email || ''}
+                                onChange={(e) => setContactInfo({...contactInfo, email: e.target.value})}
+                                placeholder="service@cipl.com"
+                              />
+                            </Form.Group>
+                          </Col>
+                        </Row>
+
+                        <Row>
+                          <Col md={6}>
+                            <Form.Group className="mb-3">
+                              <Form.Label>Call Title</Form.Label>
+                              <Form.Control
+                                type="text"
+                                value={contactInfo.call_title || ''}
+                                onChange={(e) => setContactInfo({...contactInfo, call_title: e.target.value})}
+                                placeholder="Call Us"
+                              />
+                            </Form.Group>
+                          </Col>
+                          <Col md={6}>
+                            <Form.Group className="mb-3">
+                              <Form.Label>Chat Title</Form.Label>
+                              <Form.Control
+                                type="text"
+                                value={contactInfo.chat_title || ''}
+                                onChange={(e) => setContactInfo({...contactInfo, chat_title: e.target.value})}
+                                placeholder="Chat Now"
+                              />
+                            </Form.Group>
+                          </Col>
+                        </Row>
+
+                        <Form.Group className="mb-3">
+                          <Form.Label>Call Description</Form.Label>
+                          <Form.Control
+                            as="textarea"
+                            rows={2}
+                            value={contactInfo.call_description || ''}
+                            onChange={(e) => setContactInfo({...contactInfo, call_description: e.target.value})}
+                            placeholder="Call Our Award Winning Support 24/7"
+                          />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                          <Form.Label>Chat Description</Form.Label>
+                          <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={contactInfo.chat_description || ''}
+                            onChange={(e) => setContactInfo({...contactInfo, chat_description: e.target.value})}
+                            placeholder="Chat with our support team for quick answers on product features, pricing and more."
+                          />
+                        </Form.Group>
+
+                        <div className="d-flex gap-2">
+                          <Button 
+                            variant="primary" 
+                            onClick={handleUpdateContactInfo}
+                          >
+                            Update Contact Information
+                          </Button>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </div>
                 </Tab>
               </Tabs>
 

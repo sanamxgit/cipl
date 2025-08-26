@@ -5,11 +5,13 @@ import { login } from '../utils/auth';
 import { Link } from 'react-router-dom';
 import './Navigation.css';
 import Login from './Login';
+import ContactModal from './ContactModal';
 
 const Navigation = ({ microsoftLogo }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showLogin, setShowLogin] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [user, setUser] = useState(() => {
     // Check localStorage on initial load
@@ -82,7 +84,6 @@ const Navigation = ({ microsoftLogo }) => {
               <NavDropdown.Item as={Link} to="/products/microsoft">Microsoft</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/products/autodesk">Autodesk</NavDropdown.Item>
               <NavDropdown.Item href="/products">All Products</NavDropdown.Item>
-              <NavDropdown.Item href="/products/adobe">Adobe Products</NavDropdown.Item>
             </NavDropdown>
 
             <NavDropdown 
@@ -90,8 +91,8 @@ const Navigation = ({ microsoftLogo }) => {
               id="services-dropdown"
               className="me-3"
             >
-              <NavDropdown.Item href="/services/consulting">Consulting</NavDropdown.Item>
-              <NavDropdown.Item href="/services/support">Support</NavDropdown.Item>
+              <NavDropdown.Item href="/services/consulting">Send the Quotation</NavDropdown.Item>
+              <NavDropdown.Item href="/services/support">Browse Services</NavDropdown.Item>
             </NavDropdown>
           </Nav>
 
@@ -99,7 +100,13 @@ const Navigation = ({ microsoftLogo }) => {
           <Nav className="mx-auto custom-nav">
             <Nav.Link href="/" className="mx-2">Home</Nav.Link>
             <Nav.Link href="/blog" className="mx-2">Blog</Nav.Link>
-            <Nav.Link href="/contacts" className="mx-2">Contacts</Nav.Link>
+            <Nav.Link 
+              onClick={() => setShowContactModal(true)} 
+              className="mx-2" 
+              style={{ cursor: 'pointer' }}
+            >
+              Contact Us
+            </Nav.Link>
           </Nav>
 
           {/* Right-aligned items */}
@@ -162,6 +169,10 @@ const Navigation = ({ microsoftLogo }) => {
         onLogin={handleLogin}
         isSignUp={isSignUp}
         setIsSignUp={setIsSignUp}
+      />
+      <ContactModal 
+        show={showContactModal} 
+        onHide={() => setShowContactModal(false)}
       />
     </Navbar>
   );

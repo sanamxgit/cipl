@@ -2,10 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import Navigation from './Navigation';
 import Footer from './Footer';
 import MicrosoftFAQSection from './MicrosoftFAQSection';
+import ContactModal from './ContactModal';
+import useContactModal from '../hooks/useContactModal';
 import api from '../utils/api';
 import './MicrosoftOffice.css';
 
 const MicrosoftOffice = () => {
+  const { showContactModal, openContactModal, closeContactModal } = useContactModal();
   const [selectedCategory, setSelectedCategory] = useState('home');
   const [loading, setLoading] = useState(true);
   const [pageData, setPageData] = useState({
@@ -14,18 +17,18 @@ const MicrosoftOffice = () => {
     banner_image: '',
     main_heading: 'Unlock productivity, creativity, and generative AI for your organization.',
     main_description: 'Microsoft 365 empowers your employees to do their best work with the power of generative AI in the apps they use daily.',
-      plans: {
-        business: { title: 'For Business', cards: [] },
-        home: { title: 'For Home', cards: [] }
-     
+    plans: {
+      business: { title: 'For Business', cards: [] },
+      home: { title: 'For Home', cards: [] }
     },
     videos: [],
     microsoftLogo: ''
   });
+  const [videoData, setVideoData] = useState(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   const [videoVisible, setVideoVisible] = useState(false);
-  const videoRef = useRef(null);
+  const sectionRef = useRef(null);
 
   useEffect(() => {
     const fetchPageData = async () => {
@@ -41,8 +44,22 @@ const MicrosoftOffice = () => {
       }
     };
 
+    const fetchVideoData = async () => {
+      try {
+        const { data } = await api.get('/microsoft-video-section.php');
+        if (data.status === 'success' && data.data) {
+          setVideoData(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching video data:', error);
+      }
+    };
+
     fetchPageData();
+    fetchVideoData();
   }, []);
+
+
 
   const handleScroll = (direction) => {
     const container = document.querySelector('.ms-product-cards .row');
@@ -61,20 +78,25 @@ const MicrosoftOffice = () => {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVideoVisible(true);
-          }
-        });
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVideoVisible(true);
+        }
       },
-      { threshold: 0.2 }
+      { threshold: 0.1, rootMargin: '0px 0px -100px 0px' }
     );
-    if (videoRef.current) {
-      observer.observe(videoRef.current);
-    }
-    return () => observer.disconnect();
-  }, []);
+    
+    // Add a small delay to ensure the ref is available
+    setTimeout(() => {
+      if (sectionRef.current) {
+        observer.observe(sectionRef.current);
+      }
+    }, 100);
+    
+    return () => {
+      observer.disconnect();
+    };
+  }, [videoData]); // Add videoData as dependency to re-run when video data is loaded
 
   if (loading) {
     return <div>Loading...</div>;
@@ -92,7 +114,6 @@ const MicrosoftOffice = () => {
             <h1>{pageData.title}</h1>
             <p className="subtitle">{pageData.subtitle}</p>
           </div>
-          {/* floating icons removed */}
         </div>
 
         <div className="ms-category-selector">
@@ -135,7 +156,12 @@ const MicrosoftOffice = () => {
 
                     <div className="ms-product-card-buttons mb-4">
                       <button className="btn btn-primary">{card.primaryButton}</button>
-                      <button className="btn btn-outline-primary">{card.secondaryButton}</button>
+                      <button 
+                        className="btn btn-outline-primary" 
+                        onClick={openContactModal}
+                      >
+                        {card.secondaryButton}
+                      </button>
                     </div>
 
                     {card.sections?.map((section, sectionIndex) => (
@@ -165,26 +191,82 @@ const MicrosoftOffice = () => {
           </div>
         </div>
 
-        <div className="ms-video-section" ref={videoRef}>
+        <div className={`ms-video-section ${videoVisible ? 'visible' : ''}`} ref={sectionRef}>
           <div className="container">
             <div className="ms-video-content">
-              <h2>Featured Video</h2>
-              <p>Discover Microsoft 365 in action.</p>
+              <h2>{videoData?.title || 'Featured Video'}</h2>
+              <p>{videoData?.description || 'Discover Microsoft 365 in action.'}</p>
             </div>
-            {videoVisible && pageData.videos && pageData.videos[0] ? (
+            {console.log('Video data:', videoData)}
+            {console.log('Video visible:', videoVisible)}
+            {videoData?.video_url && videoData.video_url.includes('player.cloudinary.com') && (
+              console.log('Cloudinary URL with autoplay:', `${videoData.video_url}${videoVisible ? '&autoplay=1&muted=1&loop=1' : ''}`)
+            )}
+            {videoData?.video_url ? (
               <div className="ms-video-wrapper">
-                <video
-                  className="ms-video-player"
-                  muted
-                  loop
-                  playsInline
-                  autoPlay
-                  poster={pageData.videos[0].thumbnail}
-                >
-                  <source src={(pageData.videos[0].video_url || pageData.video_url || '').trim()} type="video/mp4" />
-                </video>
+                {videoData.video_url.includes('player.cloudinary.com') ? (
+                  // Use iframe for Cloudinary player embed URLs
+                  <iframe
+                    className="ms-video-player"
+                    src={`${videoData.video_url}${videoVisible ? '&autoplay=1&muted=1&loop=1' : ''}`}
+                    title={videoData.title || 'Microsoft Video'}
+                    frameBorder="0"
+                    allow="autoplay; fullscreen"
+                    allowFullScreen
+                    style={{ aspectRatio: '16/9' }}
+                    onLoad={() => {
+                      console.log('Cloudinary iframe loaded, videoVisible:', videoVisible);
+                      console.log('Final URL:', `${videoData.video_url}${videoVisible ? '&autoplay=1&muted=1&loop=1' : ''}`);
+                    }}
+                  ></iframe>
+                ) : (
+                  // Use video tag for direct video files
+                  <video
+                    className="ms-video-player"
+                    muted
+                    loop
+                    playsInline
+                    autoPlay={videoVisible}
+                    controls
+                    onLoadStart={() => console.log('Video loading started')}
+                    onCanPlay={() => console.log('Video can play')}
+                    onError={(e) => console.log('Video error:', e)}
+                  >
+                    <source src={videoData.video_url} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                )}
               </div>
-            ) : null}
+            ) : (
+              <div className="ms-video-wrapper" style={{ 
+                background: '#333', 
+                color: '#fff', 
+                padding: '2rem', 
+                textAlign: 'center',
+                aspectRatio: '16/9',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <p>No video URL found in videoData</p>
+              </div>
+            )}
+            {!videoData?.video_url && (
+              <div className="ms-video-wrapper">
+                <div style={{ 
+                  background: '#333', 
+                  color: '#fff', 
+                  padding: '2rem', 
+                  textAlign: 'center',
+                  aspectRatio: '16/9',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <p>No video data available</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -199,6 +281,10 @@ const MicrosoftOffice = () => {
         </div>
         <MicrosoftFAQSection />
       </div>
+      <ContactModal 
+        show={showContactModal} 
+        onHide={closeContactModal}
+      />
       <Footer />
     </>
   );
