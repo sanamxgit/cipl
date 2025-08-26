@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../../utils/api';
 import { useFeatured } from '../../context/FeaturedContext';
 
 const FeaturedManager = () => {
@@ -13,7 +13,7 @@ const FeaturedManager = () => {
 
   const fetchBrands = async () => {
     try {
-      const response = await axios.get('/backend/api/brands.php');
+      const response = await api.get('/brands.php');
       if (response.data.status === 'success') {
         setBrands(response.data.data);
       }

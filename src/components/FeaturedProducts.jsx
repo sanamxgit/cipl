@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../utils/api';
 import { useFeatured } from '../context/FeaturedContext';
 import './FeaturedProducts.css';
 import QuotationModal from './QuotationModal';
@@ -21,11 +21,11 @@ const FeaturedProducts = () => {
     try {
       console.log('Fetching products for brand:', selectedFeaturedBrand);
       const url = selectedFeaturedBrand
-        ? `/backend/api/products.php?brand_id=${selectedFeaturedBrand}`
-        : '/backend/api/products.php';
+        ? `/products.php?brand_id=${selectedFeaturedBrand}`
+        : '/products.php';
       
       console.log('Fetching from URL:', url);
-      const response = await axios.get(url);
+      const response = await api.get(url);
       
       if (response.data.status === 'success') {
         const activeProducts = response.data.data.filter(product => product.is_active);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Form, Button, Table } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../../utils/api';
 
 const ProductsManager = () => {
   const [products, setProducts] = useState([]);
@@ -32,7 +32,7 @@ const ProductsManager = () => {
 
   const fetchBrands = async () => {
     try {
-      const response = await axios.get('/backend/api/brands.php');
+      const response = await api.get('/brands.php');
       if (response.data.status === 'success') {
         setBrands(response.data.data);
       }
@@ -44,9 +44,9 @@ const ProductsManager = () => {
   const fetchProducts = async () => {
     try {
       const url = selectedBrand 
-        ? `/backend/api/products.php?brand_id=${selectedBrand}&admin=true`
-        : '/backend/api/products.php?admin=true';
-      const response = await axios.get(url);
+        ? `/products.php?brand_id=${selectedBrand}&admin=true`
+        : '/products.php?admin=true';
+      const response = await api.get(url);
       if (response.data.status === 'success') {
         setProducts(response.data.data);
       }
@@ -67,10 +67,10 @@ const ProductsManager = () => {
 
         console.log('Sending data:', dataToSend); // Debug log
 
-        const endpoint = `/backend/api/products.php${editMode ? `?id=${selectedProduct.id}` : ''}`;
+        const endpoint = `/products.php${editMode ? `?id=${selectedProduct.id}` : ''}`;
         const method = editMode ? 'put' : 'post';
         
-        const response = await axios({
+        const response = await api({
             method,
             url: endpoint,
             data: dataToSend,
@@ -114,7 +114,7 @@ const ProductsManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.delete(`/backend/api/products.php?id=${id}`);
+        await api.delete(`/products.php?id=${id}`);
         fetchProducts();
       } catch (error) {
         console.error('Error deleting product:', error);
@@ -139,7 +139,7 @@ const ProductsManager = () => {
 
   const handleToggleStatus = async (product) => {
     try {
-      const response = await axios.put(`/backend/api/products.php?id=${product.id}`, {
+      const response = await api.put(`/products.php?id=${product.id}`, {
         is_active: !product.is_active
       });
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Form, Button } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../../utils/api';
 import HeroCarousel from '../../components/HeroCarousel';
 
 const AdminHome = () => {
@@ -25,7 +25,7 @@ const AdminHome = () => {
 
   const fetchSlides = async () => {
     try {
-      const response = await axios.get('/backend/api/carousel-slides.php');
+      const response = await api.get('/carousel-slides.php');
       if (response.data.status === 'success') {
         setSlides(response.data.data);
       }
@@ -37,10 +37,10 @@ const AdminHome = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = `/backend/api/carousel-slides.php${editMode ? `?id=${selectedSlide.id}` : ''}`;
+      const endpoint = `/carousel-slides.php${editMode ? `?id=${selectedSlide.id}` : ''}`;
       const method = editMode ? 'put' : 'post';
       
-      const response = await axios({
+      const response = await api({
         method,
         url: endpoint,
         data: formData,
@@ -80,7 +80,7 @@ const AdminHome = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this slide?')) {
       try {
-        await axios.delete(`/backend/api/carousel-slides.php?id=${id}`);
+        await api.delete(`/carousel-slides.php?id=${id}`);
         await fetchSlides();
       } catch (error) {
         console.error('Error deleting slide:', error);

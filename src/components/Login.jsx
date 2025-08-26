@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
 import './Login.css';
+import api from '../utils/api';
 
 const Login = ({ show, onHide, onLogin, isSignUp, setIsSignUp }) => {
   const [formData, setFormData] = useState({
@@ -21,18 +22,10 @@ const Login = ({ show, onHide, onLogin, isSignUp, setIsSignUp }) => {
     }
 
     try {
-      const response = await fetch('/backend/api/auth.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: isSignUp ? 'register' : 'login',
-          ...formData
-        }),
+      const { data } = await api.post('/auth.php', {
+        action: isSignUp ? 'register' : 'login',
+        ...formData
       });
-
-      const data = await response.json();
       
       if (data.status === 'success') {
         onLogin(data.user);

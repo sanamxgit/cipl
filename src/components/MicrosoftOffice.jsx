@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import MicrosoftVideoSection from './MicrosoftVideoSection';
 import MicrosoftProducts from './MicrosoftProducts';
 import MicrosoftFeatures from './MicrosoftFeatures';
@@ -19,8 +19,8 @@ const MicrosoftOffice = () => {
     const loadData = async () => {
       try {
         const [pageResponse, productsResponse] = await Promise.all([
-          axios.get('/backend/api/microsoft-office.php'),
-          axios.get(`/backend/api/microsoft-office.php?category=${activeCategory}`)
+          api.get('/microsoft-office.php'),
+          api.get(`/microsoft-office.php?category=${activeCategory}`)
         ]);
 
         if (pageResponse.data.status === 'success') {

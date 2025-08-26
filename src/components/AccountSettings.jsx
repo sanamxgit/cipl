@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 import './AccountSettings.css';
+import api from '../utils/api';
 
 const AccountSettings = () => {
   const [user, setUser] = useState(() => {
@@ -29,18 +30,10 @@ const AccountSettings = () => {
     }
 
     try {
-      const response = await fetch('/backend/api/update-account.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          ...formData
-        }),
+      const { data } = await api.post('/update-account.php', {
+        userId: user.id,
+        ...formData
       });
-
-      const data = await response.json();
 
       if (data.status === 'success') {
         // Update local storage with new user data

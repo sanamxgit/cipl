@@ -1,15 +1,19 @@
 <?php
-if (function_exists('header_remove')) {
-    header_remove();
+// Load CORS helper if present; otherwise set minimal CORS headers inline
+if (file_exists(__DIR__ . '/cors.php')) {
+    require_once __DIR__ . '/cors.php';
+    setCorsHeaders();
+} else {
+    header('Access-Control-Allow-Origin: http://localhost:3000');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, X-Requested-With, Authorization');
+    header('Access-Control-Allow-Credentials: true');
+    header('Content-Type: application/json; charset=UTF-8');
 }
 
-header('Access-Control-Allow-Origin: http://localhost:3000');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
-header('Content-Type: application/json; charset=UTF-8');
-
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit(0);
+    http_response_code(204);
+    exit;
 }
 
 require_once '../config/database.php';
@@ -52,8 +56,7 @@ class Brands {
                 name = :name,
                 logo_url = :logo_url,
                 description = :description,
-                is_active = :is_active,
-                updated_at = CURRENT_TIMESTAMP
+                is_active = :is_active
                 WHERE id = :id";
         
         $stmt = $this->conn->prepare($query);
@@ -127,49 +130,55 @@ switch($method) {
         break;
         
     case 'PUT':
-        $data = json_decode(file_get_contents('php://input'), true);
-        $id = isset($_GET['id']) ? $_GET['id'] : null;
-        
-        if ($id) {
-            $query = "UPDATE brands SET 
-                      name = :name,
-                      logo_url = :logo_url,
-                      description = :description,
-                      is_active = :is_active,
-                      updated_at = CURRENT_TIMESTAMP
-                      WHERE id = :id";
-                      
-            $stmt = $conn->prepare($query);
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $id = isset($_GET['id']) ? $_GET['id'] : null;
             
-            $stmt->bindParam(':name', $data['name']);
-            $stmt->bindParam(':logo_url', $data['logo_url']);
-            $stmt->bindParam(':description', $data['description']);
-            $stmt->bindParam(':is_active', $data['is_active'], PDO::PARAM_BOOL);
-            $stmt->bindParam(':id', $id);
-            
-            if ($stmt->execute()) {
-                echo json_encode([
-                    'status' => 'success',
-                    'message' => 'Brand updated successfully'
-                ]);
+            if ($id) {
+                if($brands->updateBrand($id, $data)) {
+                    echo json_encode([
+                        'status' => 'success',
+                        'message' => 'Brand updated successfully'
+                    ]);
+                } else {
+                    throw new Exception('Failed to update brand');
+                }
             } else {
-                throw new Exception('Failed to update brand');
+                http_response_code(400);
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Brand ID is required'
+                ]);
             }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
         }
         break;
         
     case 'DELETE':
-        $id = isset($_GET['id']) ? $_GET['id'] : null;
-        if($id && $brands->deleteBrand($id)) {
-            echo json_encode([
-                'status' => 'success',
-                'message' => 'Brand deleted successfully'
-            ]);
-        } else {
+        try {
+            $id = isset($_GET['id']) ? $_GET['id'] : null;
+            if($id && $brands->deleteBrand($id)) {
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Brand deleted successfully'
+                ]);
+            } else {
+                http_response_code(400);
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Failed to delete brand'
+                ]);
+            }
+        } catch (Exception $e) {
             http_response_code(500);
             echo json_encode([
                 'status' => 'error',
-                'message' => 'Failed to delete brand'
+                'message' => $e->getMessage()
             ]);
         }
         break;

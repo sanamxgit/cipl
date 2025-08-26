@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../utils/api';
 import { toast } from 'react-toastify';
 import './QuotationModal.css';
 
@@ -26,7 +26,7 @@ const QuotationModal = ({ show, onHide, selectedProduct, productType }) => {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const response = await axios.get('/backend/api/brands.php');
+        const response = await api.get('/brands.php');
         if (response.data.status === 'success') {
           setBrands(response.data.data);
         }
@@ -43,7 +43,7 @@ const QuotationModal = ({ show, onHide, selectedProduct, productType }) => {
     try {
       // Use brand.name if it's an object from the brands array
       const brandName = typeof brand === 'object' ? brand.name : brand;
-      const response = await axios.get(`/backend/api/products.php?brand=${encodeURIComponent(brandName)}`);
+      const response = await api.get(`/products.php?brand=${encodeURIComponent(brandName)}`);
       console.log('Products response:', response.data); // Debug log
       if (response.data.status === 'success') {
         setBrandProducts(response.data.data);
@@ -91,7 +91,7 @@ const QuotationModal = ({ show, onHide, selectedProduct, productType }) => {
 
       console.log('Submitting data:', formPayload); // Debug log
 
-      const response = await axios.post('/backend/api/quotations.php', formPayload);
+      const response = await api.post('/quotations.php', formPayload);
 
       if (response.data.status === 'success') {
         setShowSuccess(true);

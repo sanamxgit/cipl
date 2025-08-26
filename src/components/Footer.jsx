@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import './Footer.css';
 
 const Footer = () => {
@@ -14,7 +14,7 @@ const Footer = () => {
   useEffect(() => {
     const fetchFooterContent = async () => {
       try {
-        const response = await axios.get('/backend/api/footer-content.php');
+        const response = await api.get('/footer-content.php');
         if (response.data.status === 'success') {
           const content = response.data.data;
           
@@ -50,7 +50,7 @@ const Footer = () => {
           {/* Logo and Description Column */}
           <div className="footer-column logo-column">
             <Link to="/" className="footer-logo">
-              <img src="/logo.png" alt="Logo" />
+              <img src="/images/logo.png" alt="Logo" />
             </Link>
             <p className="company-description">
               {footerContent.description}

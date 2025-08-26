@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import '../styles/VideoSection.css';
 
 const VideoSection = () => {
@@ -20,7 +20,7 @@ const VideoSection = () => {
 
   const fetchVideoData = async () => {
     try {
-      const response = await axios.get('/backend/api/video-section.php');
+      const response = await api.get('/video-section.php');
       if (response.data.status === 'success' && response.data.data) {
         setData(response.data.data);
       }

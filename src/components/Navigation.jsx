@@ -138,11 +138,11 @@ const Navigation = ({ microsoftLogo }) => {
                         <img src={user.image} alt={user.name} className="rounded-circle" width="32" />
                       ) : (
                         <div className="avatar-placeholder">
-                          {user.name.charAt(0).toUpperCase()}
+                          {user.name ? user.name.charAt(0).toUpperCase() : '?'}
                         </div>
                       )}
                     </div>
-                    <span className="user-name">{user.name}</span>
+                    <span className="user-name">{user.name || 'User'}</span>
                   </div>
                 }
                 id="user-dropdown"

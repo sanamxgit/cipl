@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import Navigation from './Navigation';
 import NotSureSection from './NotSureSection';
 import Footer from './Footer';
@@ -32,7 +32,7 @@ const AutodeskPage = ({ previewData }) => {
   const loadData = async () => {
     try {
       console.log('Loading Autodesk page data...');
-      const pageResponse = await axios.get('/backend/api/autodesk-page.php');
+      const pageResponse = await api.get('/autodesk-page.php');
       console.log('Page data response:', pageResponse.data);
 
       if (pageResponse.data.status === 'success' && pageResponse.data.data) {
@@ -46,8 +46,8 @@ const AutodeskPage = ({ previewData }) => {
 
       // Load categories and FAQs after page data is loaded
       const [categoriesResponse, faqsResponse] = await Promise.all([
-        axios.get('/backend/api/autodesk-categories.php'),
-        axios.get('/backend/api/autodesk-faqs.php')
+        api.get('/autodesk-categories.php'),
+        api.get('/autodesk-faqs.php')
       ]);
 
       if (categoriesResponse.data.status === 'success') {
@@ -67,11 +67,11 @@ const AutodeskPage = ({ previewData }) => {
 
   const loadProducts = async (categoryId) => {
     try {
-      let url = '/backend/api/autodesk-products.php';
+      let url = '/autodesk-products.php';
       if (categoryId && categoryId !== 'all') {
         url += `?category=${categoryId}`;
       }
-      const response = await axios.get(url);
+      const response = await api.get(url);
       if (response.data.status === 'success') {
         setProducts(response.data.data);
       }

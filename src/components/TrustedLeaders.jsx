@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import './TrustedLeaders.css';
 
 const TrustedLeaders = () => {
@@ -8,7 +8,7 @@ const TrustedLeaders = () => {
   useEffect(() => {
     const fetchLeaders = async () => {
       try {
-        const response = await axios.get('/backend/api/trusted-leaders.php');
+        const response = await api.get('/trusted-leaders.php');
         if (response.data.status === 'success') {
           setLeaders(response.data.data.filter(leader => leader.is_active));
         }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../../utils/api';
 
 const VideoManager = () => {
   const [videoData, setVideoData] = useState({
@@ -17,7 +17,7 @@ const VideoManager = () => {
 
   const fetchVideoData = async () => {
     try {
-      const response = await axios.get('/backend/api/video-section.php');
+      const response = await api.get('/video-section.php');
       if (response.data.status === 'success' && response.data.data) {
         setVideoData({
           title: response.data.data.title || '',
@@ -46,9 +46,9 @@ const VideoManager = () => {
 
       console.log('Sending data:', formData);
 
-      const response = await axios({
+      const response = await api({
         method: 'PUT',
-        url: '/backend/api/video-section.php',
+        url: '/video-section.php',
         data: formData,
         headers: {
           'Content-Type': 'application/json'

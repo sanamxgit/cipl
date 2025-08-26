@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import './FAQSection.css';
 
 const FAQSection = () => {
@@ -9,7 +9,7 @@ const FAQSection = () => {
   useEffect(() => {
     const fetchFaqs = async () => {
       try {
-        const response = await axios.get('/backend/api/faqs.php');
+        const response = await api.get('/faqs.php');
         if (response.data.status === 'success') {
           setFaqs(response.data.data.filter(faq => faq.is_active));
         }

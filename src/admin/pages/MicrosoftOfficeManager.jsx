@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Form, Button, Tab, Tabs } from 'react-bootstrap';
-import axios from 'axios';
+import axios from '../../config/axios';
 import LivePreview from '../components/LivePreview';
 
 const formStyles = {
@@ -70,7 +70,7 @@ const MicrosoftOfficeManager = () => {
 
   const fetchPageData = async () => {
     try {
-      const response = await axios.get('/backend/api/microsoft-office.php');
+      const response = await axios.get('/microsoft-office.php');
       if (response.data.status === 'success') {
         const data = response.data.data;
         
@@ -108,7 +108,7 @@ const MicrosoftOfficeManager = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('/backend/api/microsoft-products.php');
+      const response = await axios.get('/microsoft-products.php');
       if (response.data.status === 'success') {
         setProducts(response.data.data);
       }
@@ -119,7 +119,7 @@ const MicrosoftOfficeManager = () => {
 
   const fetchFeatures = async () => {
     try {
-      const response = await axios.get('/backend/api/microsoft-features.php');
+      const response = await axios.get('/microsoft-features.php');
       if (response.data.status === 'success') {
         setFeatures(response.data.data);
       }
@@ -138,7 +138,7 @@ const MicrosoftOfficeManager = () => {
         video_thumbnail_url: formData.video_thumbnail_url
       });
 
-      const response = await axios.post('/backend/api/microsoft-office.php', {
+      const response = await axios.post('/microsoft-office.php', {
         ...formData,
         video_title: formData.video_title,
         video_description: formData.video_description,
@@ -163,7 +163,7 @@ const MicrosoftOfficeManager = () => {
     formData.append('image', file);
 
     try {
-      const response = await axios.post('/backend/api/upload.php', formData, {
+      const response = await axios.post('/upload.php', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
@@ -486,7 +486,7 @@ const MicrosoftOfficeManager = () => {
         return;
       }
 
-      const response = await axios.post('/backend/api/microsoft-office.php', {
+      const response = await axios.post('/microsoft-office.php', {
         action: 'add_video',
         title: newVideo.title,
         description: newVideo.description || '',
@@ -519,7 +519,7 @@ const MicrosoftOfficeManager = () => {
 
   const handleSaveEdit = async () => {
     try {
-      const response = await axios.post('/backend/api/microsoft-office.php', {
+      const response = await axios.post('/microsoft-office.php', {
         action: 'update_video',
         video_id: editingVideo.id,
         title: editingVideo.title,
@@ -543,7 +543,7 @@ const MicrosoftOfficeManager = () => {
   const handleDeleteVideo = async (videoId) => {
     if (window.confirm('Are you sure you want to delete this video?')) {
       try {
-        const response = await axios.post('/backend/api/microsoft-office.php', {
+        const response = await axios.post('/microsoft-office.php', {
           action: 'delete_video',
           video_id: videoId
         });
@@ -566,7 +566,7 @@ const MicrosoftOfficeManager = () => {
   const handleDeleteProduct = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        const response = await axios.post('/backend/api/microsoft-products.php', {
+        const response = await axios.post('/microsoft-products.php', {
           action: 'delete',
           product_id: productId
         });
@@ -585,7 +585,7 @@ const MicrosoftOfficeManager = () => {
   const handleSaveProduct = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/backend/api/microsoft-products.php', {
+      const response = await axios.post('/microsoft-products.php', {
         action: 'update',
         product: editingProduct
       });
@@ -603,7 +603,7 @@ const MicrosoftOfficeManager = () => {
 
   const handleFeatureUpdate = async (feature) => {
     try {
-      const response = await axios.post('/backend/api/microsoft-features.php', {
+      const response = await axios.post('/microsoft-features.php', {
         action: 'update',
         ...feature
       });
@@ -628,7 +628,7 @@ const MicrosoftOfficeManager = () => {
         sort_order: features.length
       };
 
-      const response = await axios.post('/backend/api/microsoft-features.php', {
+      const response = await axios.post('/microsoft-features.php', {
         action: 'add',
         ...newFeature
       });
@@ -646,7 +646,7 @@ const MicrosoftOfficeManager = () => {
   const handleRemoveFeature = async (id) => {
     if (window.confirm('Are you sure you want to delete this feature?')) {
       try {
-        const response = await axios.post('/backend/api/microsoft-features.php', {
+        const response = await axios.post('/microsoft-features.php', {
           action: 'delete',
           id
         });

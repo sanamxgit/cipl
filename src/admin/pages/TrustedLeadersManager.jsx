@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Row, Col, Table } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../../utils/api';
 
 const TrustedLeadersManager = () => {
   const [leaders, setLeaders] = useState([]);
@@ -18,7 +18,7 @@ const TrustedLeadersManager = () => {
 
   const fetchLeaders = async () => {
     try {
-      const response = await axios.get('/backend/api/trusted-leaders.php');
+      const response = await api.get('/trusted-leaders.php');
       if (response.data.status === 'success') {
         setLeaders(response.data.data);
       }
@@ -30,10 +30,10 @@ const TrustedLeadersManager = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = `/backend/api/trusted-leaders.php${editMode ? `?id=${selectedLeader.id}` : ''}`;
+      const endpoint = `/trusted-leaders.php${editMode ? `?id=${selectedLeader.id}` : ''}`;
       const method = editMode ? 'put' : 'post';
       
-      const response = await axios({
+      const response = await api({
         method,
         url: endpoint,
         data: formData
@@ -63,7 +63,7 @@ const TrustedLeadersManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this leader?')) {
       try {
-        await axios.delete(`/backend/api/trusted-leaders.php?id=${id}`);
+        await api.delete(`/trusted-leaders.php?id=${id}`);
         await fetchLeaders();
       } catch (error) {
         console.error('Error deleting leader:', error);
@@ -74,7 +74,7 @@ const TrustedLeadersManager = () => {
 
   const handleToggleStatus = async (leader) => {
     try {
-      const response = await axios.put(`/backend/api/trusted-leaders.php?id=${leader.id}`, {
+      const response = await api.put(`/trusted-leaders.php?id=${leader.id}`, {
         ...leader,
         is_active: !leader.is_active
       });

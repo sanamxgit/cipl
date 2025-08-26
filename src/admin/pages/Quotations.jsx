@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Badge, Dropdown } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../../utils/api';
 import './Quotations.css';
 
 const Quotations = () => {
@@ -13,7 +13,7 @@ const Quotations = () => {
   
   const fetchQuotations = async () => {
     try {
-      const response = await axios.get('/backend/api/quotations.php');
+      const response = await api.get('/quotations.php');
       if (response.data.status === 'success') {
         setQuotations(response.data.data.map(quote => ({
           ...quote,
@@ -31,7 +31,7 @@ const Quotations = () => {
     try {
       console.log('Updating status:', { quotationId, newStatus }); // Debug log
 
-      const response = await axios.put('/backend/api/quotations.php', {
+      const response = await api.put('/quotations.php', {
         id: quotationId,
         status: newStatus
       });

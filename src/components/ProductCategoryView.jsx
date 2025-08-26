@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import Navigation from './Navigation';
 import Footer from './Footer';
 import './ProductCategoryView.css';
+import api from '../utils/api';
 import './MicrosoftOffice.css';
 
 const ProductCategoryView = () => {
@@ -34,8 +35,7 @@ const ProductCategoryView = () => {
   useEffect(() => {
     const fetchPageData = async () => {
       try {
-        const response = await fetch('/backend/api/microsoft-office.php');
-        const data = await response.json();
+        const { data } = await api.get('/microsoft-office.php');
         if (data.status === 'success') {
           setPageData(data.data);
         }

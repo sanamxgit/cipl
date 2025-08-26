@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Form, Button, Table } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../../utils/api';
 
 const BrandsManager = () => {
   const [brands, setBrands] = useState([]);
@@ -19,7 +19,7 @@ const BrandsManager = () => {
 
   const fetchBrands = async () => {
     try {
-      const response = await axios.get('/backend/api/brands.php');
+      const response = await api.get('/brands.php');
       if (response.data.status === 'success') {
         setBrands(response.data.data);
       }
@@ -31,10 +31,10 @@ const BrandsManager = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = `/backend/api/brands.php${editMode ? `?id=${selectedBrand.id}` : ''}`;
+      const endpoint = `/brands.php${editMode ? `?id=${selectedBrand.id}` : ''}`;
       const method = editMode ? 'put' : 'post';
       
-      const response = await axios({
+      const response = await api({
         method,
         url: endpoint,
         data: formData,
@@ -69,7 +69,7 @@ const BrandsManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this brand?')) {
       try {
-        await axios.delete(`/backend/api/brands.php?id=${id}`);
+        await api.delete(`/brands.php?id=${id}`);
         fetchBrands();
       } catch (error) {
         console.error('Error deleting brand:', error);
@@ -79,7 +79,7 @@ const BrandsManager = () => {
 
   const handleToggleStatus = async (brand) => {
     try {
-      const response = await axios.put(`/backend/api/brands.php?id=${brand.id}`, {
+      const response = await api.put(`/brands.php?id=${brand.id}`, {
         ...brand,
         is_active: !brand.is_active
       });

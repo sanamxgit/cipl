@@ -18,7 +18,7 @@ import FeaturedProducts from './components/FeaturedProducts';
 import { FeaturedProvider } from './context/FeaturedContext';
 import ImageGrid from './components/ImageGrid';
 import ImageGridManager from './admin/pages/ImageGridManager';
-import axios from 'axios';
+import api from './utils/api';
 import TrustedLeaders from './components/TrustedLeaders';
 import TrustedLeadersManager from './admin/pages/TrustedLeadersManager';
 import FAQSection from './components/FAQSection';
@@ -48,7 +48,7 @@ function App() {
   useEffect(() => {
     const fetchGridImages = async () => {
       try {
-        const response = await axios.get('/backend/api/image-grid.php');
+        const response = await api.get('/image-grid.php');
         if (response.data.status === 'success') {
           setGridImages(response.data.data);
         }

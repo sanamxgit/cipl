@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Row, Col, Table } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../../utils/api';
 
 const FAQManager = () => {
   const [faqs, setFaqs] = useState([]);
@@ -19,7 +19,7 @@ const FAQManager = () => {
 
   const fetchFaqs = async () => {
     try {
-      const response = await axios.get('/backend/api/faqs.php');
+      const response = await api.get('/faqs.php');
       if (response.data.status === 'success') {
         setFaqs(response.data.data);
       }
@@ -31,10 +31,10 @@ const FAQManager = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = `/backend/api/faqs.php${editMode ? `?id=${selectedFaq.id}` : ''}`;
+      const endpoint = `/faqs.php${editMode ? `?id=${selectedFaq.id}` : ''}`;
       const method = editMode ? 'put' : 'post';
       
-      const response = await axios({
+      const response = await api({
         method,
         url: endpoint,
         data: formData
@@ -65,7 +65,7 @@ const FAQManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this FAQ?')) {
       try {
-        await axios.delete(`/backend/api/faqs.php?id=${id}`);
+        await api.delete(`/faqs.php?id=${id}`);
         await fetchFaqs();
       } catch (error) {
         console.error('Error deleting FAQ:', error);
@@ -76,7 +76,7 @@ const FAQManager = () => {
 
   const handleToggleStatus = async (faq) => {
     try {
-      const response = await axios.put(`/backend/api/faqs.php?id=${faq.id}`, {
+      const response = await api.put(`/faqs.php?id=${faq.id}`, {
         ...faq,
         is_active: !faq.is_active
       });

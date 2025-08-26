@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Row, Col, Table } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../../utils/api';
 import ImageGrid from '../../components/ImageGrid';
 
 const ImageGridManager = () => {
@@ -20,7 +20,7 @@ const ImageGridManager = () => {
 
   const fetchImages = async () => {
     try {
-      const response = await axios.get('/backend/api/image-grid.php');
+      const response = await api.get('/image-grid.php');
       if (response.data.status === 'success') {
         setImages(response.data.data);
       }
@@ -34,12 +34,12 @@ const ImageGridManager = () => {
     try {
         console.log('Submitting form data:', formData); // Debug log
         
-        const endpoint = `/backend/api/image-grid.php${editMode ? `?id=${selectedImage.id}` : ''}`;
+        const endpoint = `/image-grid.php${editMode ? `?id=${selectedImage.id}` : ''}`;
         const method = editMode ? 'put' : 'post';
         
         console.log('Making request to:', endpoint, 'with method:', method); // Debug log
         
-        const response = await axios({
+        const response = await api({
             method,
             url: endpoint,
             data: formData,
@@ -78,7 +78,7 @@ const ImageGridManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this image?')) {
       try {
-        await axios.delete(`/backend/api/image-grid.php?id=${id}`);
+        await api.delete(`/image-grid.php?id=${id}`);
         await fetchImages();
       } catch (error) {
         console.error('Error deleting image:', error);
@@ -89,7 +89,7 @@ const ImageGridManager = () => {
 
   const handleToggleStatus = async (image) => {
     try {
-      const response = await axios.put(`/backend/api/image-grid.php?id=${image.id}`, {
+      const response = await api.put(`/image-grid.php?id=${image.id}`, {
         ...image,
         is_active: !image.is_active
       });

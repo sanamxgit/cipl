@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import Login from './Login';
+import api from '../utils/api';
 import './ProtectedRoute.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -23,16 +24,7 @@ const ProtectedRoute = ({ children }) => {
         return;
       }
 
-      const response = await fetch('/backend/api/verify-auth.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user: JSON.parse(user) }),
-        credentials: 'include'
-      });
-      
-      const data = await response.json();
+      const { data } = await api.post('/verify-auth.php', { user: JSON.parse(user) });
       
       if (data.status === 'success' && data.user.role === 'admin') {
         setIsAuthenticated(true);

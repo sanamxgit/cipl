@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Carousel } from 'react-bootstrap';
 import QuotationModal from './QuotationModal';
+import api from '../utils/api';
+
 const HeroCarousel = () => {
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,26 +14,24 @@ const HeroCarousel = () => {
     const fetchSlides = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('/backend/api/carousel-slides.php', {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        });
+        console.log('Fetching slides...');
+        const response = await api.get('/carousel-slides.php');
+        console.log('Response:', response);
         
         if (response.data && response.data.status === 'success') {
           setSlides(response.data.data || []);
         } else {
+          console.error('Invalid response format:', response.data);
           throw new Error('Invalid data format received');
         }
       } catch (error) {
         console.error('Error fetching slides:', error);
+        console.error('Error details:', error.response?.data);
         setError('Failed to load slides');
       } finally {
         setLoading(false);
       }
     };
-
 
     fetchSlides();
   }, []);

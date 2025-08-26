@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import '../styles/BrandScroller.css';
 import QuotationModal from './QuotationModal';
@@ -33,7 +33,7 @@ const BrandScroller = () => {
 
   const fetchBrands = async () => {
     try {
-      const response = await axios.get('/backend/api/brands.php');
+      const response = await api.get('/brands.php');
       if (response.data.status === 'success') {
         setBrands(response.data.data);
       }
@@ -44,7 +44,7 @@ const BrandScroller = () => {
 
   const fetchBrandProducts = async (brandId) => {
     try {
-      const response = await axios.get(`/backend/api/products.php?brand_id=${brandId}`);
+      const response = await api.get(`/products.php?brand_id=${brandId}`);
       if (response.data.status === 'success') {
         setProducts(response.data.data);
       }
