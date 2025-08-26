@@ -71,14 +71,7 @@ const MicrosoftOfficeManager = () => {
     sort_order: 0,
     is_active: true
   });
-  const [contactInfo, setContactInfo] = useState({
-    phone_number: '+977-980000000',
-    email: 'service@cipl.com',
-    chat_title: 'Chat Now',
-    chat_description: 'Chat with our support team for quick answers on product features, pricing and more.',
-    call_title: 'Call Us',
-    call_description: 'Call Our Award Winning Support 24/7'
-  });
+
 
   useEffect(() => {
     fetchPageData();
@@ -86,7 +79,7 @@ const MicrosoftOfficeManager = () => {
     fetchFeatures();
     fetchFAQs();
     fetchVideos();
-    fetchContactInfo();
+
   }, []);
 
   const fetchPageData = async () => {
@@ -658,28 +651,7 @@ const MicrosoftOfficeManager = () => {
     }
   };
 
-  const fetchContactInfo = async () => {
-    try {
-      const response = await axios.get('/contact-info.php');
-      if (response.data.status === 'success') {
-        setContactInfo(response.data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching contact info:', error);
-    }
-  };
 
-  const handleUpdateContactInfo = async () => {
-    try {
-      const response = await axios.put('/contact-info.php', contactInfo);
-      if (response.data.status === 'success') {
-        alert('Contact information updated successfully!');
-      }
-    } catch (error) {
-      console.error('Error updating contact info:', error);
-      alert('Error updating contact information');
-    }
-  };
 
   const handleDeleteVideo = async (videoId) => {
     if (!window.confirm('Are you sure you want to delete this video?')) return;
@@ -1584,97 +1556,8 @@ const MicrosoftOfficeManager = () => {
                   </Card>
                 </Tab>
 
-                <Tab eventKey="contact" title="Contact Info">
-                  <div className="contact-info-section">
-                    <Card>
-                      <Card.Header>
-                        <h5 className="mb-0">Contact Information Settings</h5>
-                      </Card.Header>
-                      <Card.Body>
-                        <Row>
-                          <Col md={6}>
-                            <Form.Group className="mb-3">
-                              <Form.Label>Phone Number</Form.Label>
-                              <Form.Control
-                                type="text"
-                                value={contactInfo.phone_number || ''}
-                                onChange={(e) => setContactInfo({...contactInfo, phone_number: e.target.value})}
-                                placeholder="+977-980000000"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={6}>
-                            <Form.Group className="mb-3">
-                              <Form.Label>Email Address</Form.Label>
-                              <Form.Control
-                                type="email"
-                                value={contactInfo.email || ''}
-                                onChange={(e) => setContactInfo({...contactInfo, email: e.target.value})}
-                                placeholder="service@cipl.com"
-                              />
-                            </Form.Group>
-                          </Col>
-                        </Row>
 
-                        <Row>
-                          <Col md={6}>
-                            <Form.Group className="mb-3">
-                              <Form.Label>Call Title</Form.Label>
-                              <Form.Control
-                                type="text"
-                                value={contactInfo.call_title || ''}
-                                onChange={(e) => setContactInfo({...contactInfo, call_title: e.target.value})}
-                                placeholder="Call Us"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={6}>
-                            <Form.Group className="mb-3">
-                              <Form.Label>Chat Title</Form.Label>
-                              <Form.Control
-                                type="text"
-                                value={contactInfo.chat_title || ''}
-                                onChange={(e) => setContactInfo({...contactInfo, chat_title: e.target.value})}
-                                placeholder="Chat Now"
-                              />
-                            </Form.Group>
-                          </Col>
-                        </Row>
 
-                        <Form.Group className="mb-3">
-                          <Form.Label>Call Description</Form.Label>
-                          <Form.Control
-                            as="textarea"
-                            rows={2}
-                            value={contactInfo.call_description || ''}
-                            onChange={(e) => setContactInfo({...contactInfo, call_description: e.target.value})}
-                            placeholder="Call Our Award Winning Support 24/7"
-                          />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                          <Form.Label>Chat Description</Form.Label>
-                          <Form.Control
-                            as="textarea"
-                            rows={3}
-                            value={contactInfo.chat_description || ''}
-                            onChange={(e) => setContactInfo({...contactInfo, chat_description: e.target.value})}
-                            placeholder="Chat with our support team for quick answers on product features, pricing and more."
-                          />
-                        </Form.Group>
-
-                        <div className="d-flex gap-2">
-                          <Button 
-                            variant="primary" 
-                            onClick={handleUpdateContactInfo}
-                          >
-                            Update Contact Information
-                          </Button>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  </div>
-                </Tab>
               </Tabs>
 
               <Button type="submit" variant="primary">

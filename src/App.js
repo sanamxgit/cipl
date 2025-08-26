@@ -34,6 +34,8 @@ import AutodeskManager from './admin/pages/AutodeskManager';
 import AutodeskPage from './components/AutodeskPage';
 import Quotations from './admin/pages/Quotations';
 import MicrosoftOffice from './components/MicrosoftOffice';
+import ContactInfoManager from './admin/pages/ContactInfoManager';
+import SearchPage from './components/SearchPage';
 
 
 const ProtectedRoute = ({ children }) => {
@@ -93,6 +95,7 @@ function App() {
           <Route path="/products/autodesk" element={<AutodeskPage />} />
           <Route path="/products/:slug" element={<ProductView />} />
           <Route path="/products/:category" element={<ProductCategoryView />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/admin/*" element={
             <ProtectedRoute>
               <AdminLayout>
@@ -110,6 +113,7 @@ function App() {
                   <Route path="product-categories" element={<ProductCategoryManager />} />
                   <Route path="microsoft-office" element={<MicrosoftOfficeManager />} />
                   <Route path="autodesk" element={<AutodeskManager />} />
+                  <Route path="contact-info" element={<ContactInfoManager />} />
                 </Routes>
               </AdminLayout>
             </ProtectedRoute>

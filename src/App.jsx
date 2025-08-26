@@ -4,6 +4,7 @@ import Navigation from './components/Navigation';
 import AdminLayout from './admin/components/AdminLayout';
 import AutodeskPage from './components/AutodeskPage';
 import AutodeskManager from './admin/pages/AutodeskManager';
+import ContactInfoManager from './admin/pages/ContactInfoManager';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -32,6 +33,7 @@ function App() {
         }>
           <Route index element={<div>Welcome to Admin</div>} />
           <Route path="autodesk" element={<AutodeskManager />} />
+          <Route path="contact-info" element={<ContactInfoManager />} />
         </Route>
 
         {/* Account Settings Route */}

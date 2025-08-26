@@ -6,12 +6,15 @@ import { Link } from 'react-router-dom';
 import './Navigation.css';
 import Login from './Login';
 import ContactModal from './ContactModal';
+import QuotationModal from './QuotationModal';
 
 const Navigation = ({ microsoftLogo }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showLogin, setShowLogin] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showQuotationModal, setShowQuotationModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const [user, setUser] = useState(() => {
     // Check localStorage on initial load
@@ -38,6 +41,30 @@ const Navigation = ({ microsoftLogo }) => {
   const handleShowLogin = (signup = false) => {
     setIsSignUp(signup);
     setShowLogin(true);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleSearchInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleAdobeClick = () => {
+    navigate('/');
+    // Scroll to brand section after navigation and auto-select Adobe
+    setTimeout(() => {
+      const brandSection = document.querySelector('.products-section');
+      if (brandSection) {
+        brandSection.scrollIntoView({ behavior: 'smooth' });
+        // Auto-select Adobe brand (assuming it's the first brand or has a specific ID)
+        // This will need to be implemented in the BrandScroller component
+      }
+    }, 100);
   };
 
   return (
@@ -83,6 +110,7 @@ const Navigation = ({ microsoftLogo }) => {
             >
               <NavDropdown.Item as={Link} to="/products/microsoft">Microsoft</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/products/autodesk">Autodesk</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => handleAdobeClick()}>Adobe</NavDropdown.Item>
               <NavDropdown.Item href="/products">All Products</NavDropdown.Item>
             </NavDropdown>
 
@@ -91,7 +119,7 @@ const Navigation = ({ microsoftLogo }) => {
               id="services-dropdown"
               className="me-3"
             >
-              <NavDropdown.Item href="/services/consulting">Send the Quotation</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => setShowQuotationModal(true)}>Get the Quotation</NavDropdown.Item>
               <NavDropdown.Item href="/services/support">Browse Services</NavDropdown.Item>
             </NavDropdown>
           </Nav>
@@ -102,7 +130,7 @@ const Navigation = ({ microsoftLogo }) => {
             <Nav.Link href="/blog" className="mx-2">Blog</Nav.Link>
             <Nav.Link 
               onClick={() => setShowContactModal(true)} 
-              className="mx-2" 
+              className="mx-2 contact-us-link" 
               style={{ cursor: 'pointer' }}
             >
               Contact Us
@@ -111,13 +139,23 @@ const Navigation = ({ microsoftLogo }) => {
 
           {/* Right-aligned items */}
           <Nav className="ms-auto align-items-center">
-            <Form className="d-flex me-3">
+            <Form className="d-flex me-3" onSubmit={handleSearch}>
               <Form.Control
                 type="search"
                 placeholder="Search"
                 className="me-2"
                 aria-label="Search"
+                value={searchQuery}
+                onChange={handleSearchInputChange}
               />
+              <Button 
+                type="submit" 
+                variant="outline-secondary" 
+                size="sm"
+                className="search-submit-btn"
+              >
+                <i className="fas fa-search"></i>
+              </Button>
             </Form>
             {!user ? (
               <div className="d-flex align-items-center">
@@ -173,6 +211,11 @@ const Navigation = ({ microsoftLogo }) => {
       <ContactModal 
         show={showContactModal} 
         onHide={() => setShowContactModal(false)}
+      />
+      <QuotationModal 
+        show={showQuotationModal} 
+        onHide={() => setShowQuotationModal(false)}
+        productType="General"
       />
     </Navbar>
   );

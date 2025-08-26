@@ -6,7 +6,7 @@
 }
 
 .contact-modal .modal-header {
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #19668A, #0d4a6b);
   color: white;
   border-radius: 12px 12px 0 0;
   border-bottom: none;
@@ -16,6 +16,7 @@
 .contact-modal .modal-title {
   font-weight: 600;
   font-size: 1.5rem;
+  color: white;
 }
 
 .contact-modal .modal-body {
@@ -53,7 +54,7 @@
   flex-shrink: 0;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #19668A, #0d4a6b);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -99,22 +100,22 @@
 }
 
 .contact-button.btn-primary {
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #19668A, #0d4a6b);
   border: none;
 }
 
 .contact-button.btn-primary:hover {
-  background: linear-gradient(135deg, #0056b3, #004085);
+  background: linear-gradient(135deg, #0d4a6b, #0a3a56);
 }
 
 .contact-button.btn-outline-primary {
-  border-color: #007bff;
-  color: #007bff;
+  border-color: #19668A;
+  color: #19668A;
 }
 
 .contact-button.btn-outline-primary:hover {
-  background: #007bff;
-  border-color: #007bff;
+  background: #19668A;
+  border-color: #19668A;
   color: white;
 }
 

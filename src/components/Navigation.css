@@ -104,6 +104,26 @@
   color: #19668A !important;
 }
 
+/* Search bar styling */
+.navbar .form-control {
+  border-radius: 25px !important;
+  border: 1px solid #ced4da;
+  padding: 0.5rem 1rem;
+  width: 200px !important;
+  transition: all 0.2s ease;
+}
+
+.navbar .form-control:focus {
+  border-color: #19668A;
+  box-shadow: 0 0 0 0.2rem rgba(25, 102, 138, 0.25);
+  width: 250px !important;
+}
+
+/* Contact Us link styling */
+.navbar .nav-link[onclick] {
+  white-space: nowrap;
+}
+
 /* Style for dropdown titles */
 #products-dropdown,
 #services-dropdown {

@@ -3,6 +3,7 @@ import api from '../utils/api';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import '../styles/BrandScroller.css';
 import QuotationModal from './QuotationModal';
+import ContactModal from './ContactModal';
 
 const BrandScroller = () => {
   const [brands, setBrands] = useState([]);
@@ -11,6 +12,7 @@ const BrandScroller = () => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showQuotation, setShowQuotation] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showContactModal, setShowContactModal] = useState(false);
 
   const scrollRef = useRef(null);
   const productsRowRef = useRef(null);
@@ -21,7 +23,12 @@ const BrandScroller = () => {
 
   useEffect(() => {
     if (brands.length > 0 && !selectedBrand) {
-      setSelectedBrand(brands[0]);
+      // Check if we should auto-select Adobe (first brand or specific Adobe brand)
+      const adobeBrand = brands.find(brand => 
+        brand.name.toLowerCase().includes('adobe') || 
+        brand.name.toLowerCase().includes('adobe')
+      );
+      setSelectedBrand(adobeBrand || brands[0]);
     }
   }, [brands]);
 
@@ -74,6 +81,10 @@ const BrandScroller = () => {
   const handleQuotationClick = (product) => {
     setSelectedProduct(product);
     setShowQuotation(true);
+  };
+
+  const handleContactClick = () => {
+    setShowContactModal(true);
   };
 
   return (
@@ -161,7 +172,7 @@ const BrandScroller = () => {
                           <button className="btn btn-primary" onClick={() => handleQuotationClick(product)}>
                             {product.primary_button_text}
                           </button>
-                          <button className="btn btn-outline-primary">
+                          <button className="btn btn-outline-primary" onClick={handleContactClick}>
                             {product.secondary_button_text}
                           </button>
                         </div>
@@ -185,6 +196,10 @@ const BrandScroller = () => {
           show={showQuotation}
           onHide={() => setShowQuotation(false)}
           product={selectedProduct}
+        />
+        <ContactModal 
+          show={showContactModal}
+          onHide={() => setShowContactModal(false)}
         />
       </Container>
     </div>

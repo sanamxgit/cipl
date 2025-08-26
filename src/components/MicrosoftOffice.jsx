@@ -3,12 +3,15 @@ import Navigation from './Navigation';
 import Footer from './Footer';
 import MicrosoftFAQSection from './MicrosoftFAQSection';
 import ContactModal from './ContactModal';
+import QuotationModal from './QuotationModal';
 import useContactModal from '../hooks/useContactModal';
 import api from '../utils/api';
 import './MicrosoftOffice.css';
 
 const MicrosoftOffice = () => {
   const { showContactModal, openContactModal, closeContactModal } = useContactModal();
+  const [showQuotationModal, setShowQuotationModal] = useState(false);
+  const [selectedPlanForQuotation, setSelectedPlanForQuotation] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('home');
   const [loading, setLoading] = useState(true);
   const [pageData, setPageData] = useState({
@@ -74,6 +77,11 @@ const MicrosoftOffice = () => {
       setShowLeftArrow(container.scrollLeft > 0);
       setShowRightArrow(container.scrollLeft < container.scrollWidth - container.clientWidth - 10);
     }, 400);
+  };
+
+  const handleGetQuote = (plan) => {
+    setSelectedPlanForQuotation(plan);
+    setShowQuotationModal(true);
   };
 
   useEffect(() => {
@@ -155,7 +163,12 @@ const MicrosoftOffice = () => {
                     </div>
 
                     <div className="ms-product-card-buttons mb-4">
-                      <button className="btn btn-primary">{card.primaryButton}</button>
+                      <button 
+                        className="btn btn-primary"
+                        onClick={() => handleGetQuote(card)}
+                      >
+                        {card.primaryButton}
+                      </button>
                       <button 
                         className="btn btn-outline-primary" 
                         onClick={openContactModal}
@@ -284,6 +297,12 @@ const MicrosoftOffice = () => {
       <ContactModal 
         show={showContactModal} 
         onHide={closeContactModal}
+      />
+      <QuotationModal 
+        show={showQuotationModal}
+        onHide={() => setShowQuotationModal(false)}
+        selectedProduct={selectedPlanForQuotation}
+        productType="Microsoft"
       />
       <Footer />
     </>

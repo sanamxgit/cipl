@@ -4,6 +4,7 @@ import api from '../utils/api';
 import { useFeatured } from '../context/FeaturedContext';
 import './FeaturedProducts.css';
 import QuotationModal from './QuotationModal';
+import ContactModal from './ContactModal';
 
 const FeaturedProducts = () => {
   const { selectedFeaturedBrand } = useFeatured();
@@ -12,6 +13,7 @@ const FeaturedProducts = () => {
   const productsRowRef = useRef(null);
   const [showQuotation, setShowQuotation] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showContactModal, setShowContactModal] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -44,6 +46,10 @@ const FeaturedProducts = () => {
   const handleQuotationClick = (product) => {
     setSelectedProduct(product);
     setShowQuotation(true);
+  };
+
+  const handleContactClick = () => {
+    setShowContactModal(true);
   };
 
   const scroll = (direction) => {
@@ -94,7 +100,7 @@ const FeaturedProducts = () => {
                       <button className="btn btn-primary" onClick={() => handleQuotationClick(product)}>
                         {product.primary_button_text}
                       </button>
-                      <button className="btn btn-outline-primary">
+                      <button className="btn btn-outline-primary" onClick={handleContactClick}>
                         {product.secondary_button_text}
                       </button>
                     </div>
@@ -117,6 +123,10 @@ const FeaturedProducts = () => {
           onHide={() => setShowQuotation(false)}
           selectedProduct={selectedProduct}
           productType="Autodesk"
+        />
+        <ContactModal 
+          show={showContactModal}
+          onHide={() => setShowContactModal(false)}
         />
       </Container>
     </section>

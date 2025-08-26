@@ -132,6 +132,16 @@ const AdminLayout = ({ children }) => {
             </Link>
 
             <Link 
+              to="/admin/contact-info" 
+              className={`nav-link ${isActive('/admin/contact-info') ? 'active' : ''}`}
+            >
+              <div className="nav-link-content">
+                <i className="fas fa-phone nav-icon" style={{ fontSize: '20px' }}></i>
+                <span>Contact Info</span>
+              </div>
+            </Link>
+
+            <Link 
               to="/admin/settings" 
               className={`nav-link ${isActive('/admin/settings') ? 'active' : ''}`}
             >

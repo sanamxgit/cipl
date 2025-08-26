@@ -48,10 +48,7 @@ const ContactModal = ({ show, onHide }) => {
     }
   };
 
-  const handleChatClick = () => {
-    // This could be integrated with a chat service like Intercom, Zendesk, etc.
-    alert('Chat feature will be integrated soon!');
-  };
+
 
   return (
     <Modal show={show} onHide={onHide} size="lg" centered className="contact-modal">
@@ -87,29 +84,7 @@ const ContactModal = ({ show, onHide }) => {
               </div>
             </div>
 
-            <hr className="contact-divider" />
 
-            {/* Chat Section */}
-            <div className="contact-section">
-              <div className="contact-icon">
-                <i className="fas fa-comments"></i>
-              </div>
-              <div className="contact-details">
-                <h5>{contactInfo.chat_title}</h5>
-                <p className="contact-description">{contactInfo.chat_description}</p>
-                <Button 
-                  variant="outline-primary" 
-                  size="lg" 
-                  onClick={handleChatClick}
-                  className="contact-button"
-                >
-                  <i className="fas fa-comments me-2"></i>
-                  Start Chat
-                </Button>
-              </div>
-            </div>
-
-            <hr className="contact-divider" />
 
             {/* Email Section */}
             <div className="contact-section">

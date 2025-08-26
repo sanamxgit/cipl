@@ -17,4 +17,37 @@
   padding-left: 1rem;
   width: 200px;
   border: 1px solid #e2e8f0;
+}
+
+/* Fix Contact Us text wrapping */
+.nav-link {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ensure Contact Us stays on one line */
+.contact-us-link {
+  white-space: nowrap !important;
+  min-width: fit-content;
+  display: inline-block;
+}
+
+/* Search submit button styling */
+.search-submit-btn {
+  border-radius: 0 20px 20px 0;
+  border-left: none;
+  padding: 0.375rem 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.search-submit-btn:hover {
+  background-color: #19668A;
+  border-color: #19668A;
+  color: white;
+}
+
+/* Adjust search form layout */
+.form-control + .search-submit-btn {
+  margin-left: -1px;
 } 

@@ -74,18 +74,11 @@ const HeroCarousel = () => {
             <div className="carousel-content">
               <h2>{slide.title}</h2>
               <p>{slide.description}</p>
-              {slide.product_card && (
-                <div className="carousel-product-card">
-                  <img src={slide.product_card.icon} alt="" />
-                  <div className="carousel-product-card-content">
-                    <h3>{slide.product_card.title}</h3>
-                    <p>{slide.product_card.description}</p>
-                    <button className="btn btn-light" onClick={() => handleQuotationClick(slide.product_card)}>
-                      {slide.product_card.buttonText}
-                    </button>
-                  </div>
-                </div>
-              )}
+              <div className="carousel-product-card">
+                <button className="btn btn-light browse-services-btn" onClick={() => handleQuotationClick(slide)}>
+                  Browse Services
+                </button>
+              </div>
             </div>
           </div>
           <QuotationModal 
