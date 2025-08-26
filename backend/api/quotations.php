@@ -40,18 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception('Invalid JSON: ' . json_last_error_msg());
         }
 
-        // Test mode - if test parameter is present, return success without database operation
-        if (isset($input['test']) && $input['test'] === true) {
-            http_response_code(200);
-            echo json_encode([
-                'status' => 'success',
-                'message' => 'Test quotation submitted successfully',
-                'id' => 999,
-                'test_mode' => true
-            ]);
-            exit;
-        }
-
         // Validate required fields
         if (empty($input['fullName']) || empty($input['email']) || empty($input['phoneNumber'])) {
             throw new Exception('Required fields are missing');

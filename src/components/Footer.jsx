@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import ContactModal from './ContactModal';
 import './Footer.css';
 
 const Footer = () => {
@@ -10,6 +11,7 @@ const Footer = () => {
     company: [],
     social: [],
   });
+  const [showContactModal, setShowContactModal] = useState(false);
 
   useEffect(() => {
     const fetchFooterContent = async () => {
@@ -98,18 +100,18 @@ const Footer = () => {
           {/* Contact Buttons */}
           <div className="footer-column contact-column">
             <div className="contact-buttons">
-              <a href="/contact/sales" className="contact-button sales">
-                Contact Sales
-                <i className="fas fa-arrow-right"></i>
-              </a>
-              <a href="/contact/support" className="contact-button support">
+              <button 
+                className="contact-button support"
+                onClick={() => setShowContactModal(true)}
+              >
                 Contact Support
                 <i className="fas fa-arrow-right"></i>
-              </a>
+              </button>
             </div>
           </div>
         </div>
       </div>
+      <ContactModal show={showContactModal} onHide={() => setShowContactModal(false)} />
     </footer>
   );
 };

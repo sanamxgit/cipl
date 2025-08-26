@@ -6,7 +6,7 @@ import AdminLayout from './admin/components/AdminLayout';
 import AdminHome from './admin/pages/AdminHome';
 import BrandsManager from './admin/pages/BrandsManager';
 import ProductsManager from './admin/pages/ProductsManager';
-import { isAuthenticated } from './utils/auth';
+import { isAuthenticated, isAdmin } from './utils/auth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/hero-carousel.css';
 import './styles/navigation.css';
@@ -38,10 +38,18 @@ import ContactInfoManager from './admin/pages/ContactInfoManager';
 import SearchPage from './components/SearchPage';
 
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, requireAdmin = true }) => {
+  // First check if user is authenticated
   if (!isAuthenticated()) {
     return <Navigate to="/" replace />;
   }
+  
+  // If admin role is required, check if user is admin
+  if (requireAdmin && !isAdmin()) {
+    // Redirect to home page with access denied message
+    return <Navigate to="/" replace />;
+  }
+  
   return children;
 };
 

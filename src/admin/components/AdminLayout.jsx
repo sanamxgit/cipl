@@ -145,10 +145,6 @@ const AdminLayout = ({ children }) => {
               to="/admin/settings" 
               className={`nav-link ${isActive('/admin/settings') ? 'active' : ''}`}
             >
-              <div className="nav-link-content">
-                <img src="/icon-settings.png" alt="" className="nav-icon" />
-                <span>Settings</span>
-              </div>
             </Link>
 
           </Nav>
@@ -159,7 +155,7 @@ const AdminLayout = ({ children }) => {
           <div className="admin-profile">
             <img src="/admin-avatar.png" alt="Admin" />
             <div className="admin-info">
-              <span className="admin-name">Olivia Williams</span>
+              <span className="admin-name">Rajendra Aryal </span>
               <span className="admin-role">Administrator</span>
             </div>
             <button className="profile-menu">

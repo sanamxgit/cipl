@@ -75,31 +75,42 @@ class TrustedLeaders {
 }
 
 $database = new Database();
-$db = $database->getConnection();
-$trustedLeaders = new TrustedLeaders($db);
+$conn = $database->getConnection();
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    try {
+        error_log('Fetching trusted leaders');
+        $stmt = $conn->prepare("
+            SELECT * FROM trusted_leaders 
+            WHERE is_active = 1 
+            ORDER BY position ASC
+        ");
+        $stmt->execute();
+        $leaders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        error_log('Found leaders: ' . print_r($leaders, true));
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => $leaders
+        ]);
+    } catch (Exception $e) {
+        error_log('Error fetching leaders: ' . $e->getMessage());
+        http_response_code(500);
+        echo json_encode([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ]);
+    }
+}
 
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch($method) {
-    case 'GET':
-        try {
-            $result = $trustedLeaders->getAllLeaders();
-            echo json_encode([
-                'status' => 'success',
-                'data' => $result
-            ]);
-        } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
-        break;
-        
     case 'POST':
         try {
             $data = json_decode(file_get_contents('php://input'), true);
+            $trustedLeaders = new TrustedLeaders($conn);
             if($trustedLeaders->addLeader($data)) {
                 echo json_encode([
                     'status' => 'success',
@@ -120,6 +131,7 @@ switch($method) {
         if ($id) {
             try {
                 $data = json_decode(file_get_contents('php://input'), true);
+                $trustedLeaders = new TrustedLeaders($conn);
                 if($trustedLeaders->updateLeader($id, $data)) {
                     echo json_encode([
                         'status' => 'success',
@@ -140,6 +152,7 @@ switch($method) {
         $id = isset($_GET['id']) ? $_GET['id'] : null;
         if($id) {
             try {
+                $trustedLeaders = new TrustedLeaders($conn);
                 if($trustedLeaders->deleteLeader($id)) {
                     echo json_encode([
                         'status' => 'success',

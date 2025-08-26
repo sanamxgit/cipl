@@ -3,6 +3,8 @@ import { Container, Row, Col, Card, Button, Form, InputGroup, Spinner, Alert } f
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import './SearchPage.css';
+import Navigation from './Navigation';
+import Footer from './Footer';
 
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
@@ -80,6 +82,7 @@ const SearchPage = () => {
 
   return (
     <div className="search-page">
+      <Navigation />
       <Container>
         {/* Header */}
         <div className="search-header mb-4">
@@ -212,6 +215,7 @@ const SearchPage = () => {
           </>
         )}
       </Container>
+      <Footer />
     </div>
   );
 };

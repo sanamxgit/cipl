@@ -8,6 +8,7 @@ const Quotations = () => {
   const [loading, setLoading] = useState(true);
   const [selectedQuotation, setSelectedQuotation] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [openDropdownId, setOpenDropdownId] = useState(null);
   
   useEffect(() => {
     fetchQuotations();
@@ -71,7 +72,15 @@ const Quotations = () => {
     }
 
     return (
-      <Dropdown>
+      <Dropdown 
+        onToggle={(isOpen) => {
+          if (isOpen) {
+            setOpenDropdownId(quote.id);
+          } else {
+            setOpenDropdownId(null);
+          }
+        }}
+      >
         <Dropdown.Toggle 
           variant="warning" 
           size="sm"
@@ -80,7 +89,25 @@ const Quotations = () => {
           Pending
         </Dropdown.Toggle>
 
-        <Dropdown.Menu>
+        <Dropdown.Menu 
+          align="start"
+          popperConfig={{
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'viewport',
+                },
+              },
+              {
+                name: 'flip',
+                options: {
+                  fallbackPlacements: ['top', 'bottom'],
+                },
+              },
+            ],
+          }}
+        >
           <Dropdown.Item 
             onClick={() => handleStatusChange(quote.id, 'contacted')}
           >
@@ -138,7 +165,7 @@ const Quotations = () => {
               key={quote.id} 
               onClick={() => handleRowClick(quote)}
               style={{ cursor: 'pointer' }}
-              className="quotation-row"
+              className={`quotation-row ${openDropdownId === quote.id ? 'dropdown-open' : ''}`}
             >
               <td>{index + 1}</td>
               <td>#{String(quote.id).padStart(4, '0')}</td>

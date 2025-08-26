@@ -218,7 +218,6 @@ const QuotationModal = ({ show, onHide, selectedProduct, productType }) => {
                         />
                       )}
                       <h6 className="mb-2">{product.name}</h6>
-                      <p className="price mb-2">${product.price}/mo</p>
                       <div className="selection-indicator">
                         {isSelected ? '✓ Selected' : 'Click to select'}
                       </div>

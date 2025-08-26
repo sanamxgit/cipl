@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Navbar, Nav, NavDropdown, Container, Form, Button } from 'react-bootstrap';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { login } from '../utils/auth';
+import { login, logout, getUser, isAdmin } from '../utils/auth';
 import { Link } from 'react-router-dom';
 import './Navigation.css';
 import Login from './Login';
@@ -18,15 +18,14 @@ const Navigation = ({ microsoftLogo }) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [user, setUser] = useState(() => {
     // Check localStorage on initial load
-    const savedUser = localStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : null;
+    return getUser();
   });
 
   const isProductView = location.pathname.startsWith('/products/');
 
   const handleLogin = (userData) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    login(userData); // Use the new auth utility
     if (userData.role === 'admin') {
       navigate('/admin');
     }
@@ -34,8 +33,12 @@ const Navigation = ({ microsoftLogo }) => {
 
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem('user'); // Clear user data from localStorage
+    logout(); // Use the new auth utility
     navigate('/'); // Redirect to home page
+  };
+
+  const isUserAdmin = () => {
+    return user && user.role === 'admin';
   };
 
   const handleShowLogin = (signup = false) => {
@@ -55,6 +58,8 @@ const Navigation = ({ microsoftLogo }) => {
   };
 
   const handleAdobeClick = () => {
+    // Set flag for BrandScroller to auto-select Adobe brand
+    sessionStorage.setItem('selectAdobeBrand', 'true');
     navigate('/');
     // Scroll to brand section after navigation and auto-select Adobe
     setTimeout(() => {
@@ -111,7 +116,7 @@ const Navigation = ({ microsoftLogo }) => {
               <NavDropdown.Item as={Link} to="/products/microsoft">Microsoft</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/products/autodesk">Autodesk</NavDropdown.Item>
               <NavDropdown.Item onClick={() => handleAdobeClick()}>Adobe</NavDropdown.Item>
-              <NavDropdown.Item href="/products">All Products</NavDropdown.Item>
+              <NavDropdown.Item href="/search?q=a">All Products</NavDropdown.Item>
             </NavDropdown>
 
             <NavDropdown 
@@ -120,14 +125,13 @@ const Navigation = ({ microsoftLogo }) => {
               className="me-3"
             >
               <NavDropdown.Item onClick={() => setShowQuotationModal(true)}>Get the Quotation</NavDropdown.Item>
-              <NavDropdown.Item href="/services/support">Browse Services</NavDropdown.Item>
+              <NavDropdown.Item href="/search?q=a">Browse Services</NavDropdown.Item>
             </NavDropdown>
           </Nav>
 
           {/* Center-aligned items */}
           <Nav className="mx-auto custom-nav">
             <Nav.Link href="/" className="mx-2">Home</Nav.Link>
-            <Nav.Link href="/blog" className="mx-2">Blog</Nav.Link>
             <Nav.Link 
               onClick={() => setShowContactModal(true)} 
               className="mx-2 contact-us-link" 
@@ -153,6 +157,7 @@ const Navigation = ({ microsoftLogo }) => {
                 variant="outline-secondary" 
                 size="sm"
                 className="search-submit-btn"
+                onClick={handleSearch}
               >
                 <i className="fas fa-search"></i>
               </Button>
@@ -193,7 +198,7 @@ const Navigation = ({ microsoftLogo }) => {
                 id="user-dropdown"
                 align="end"
               >
-                <NavDropdown.Item as={Link} to="/account">Account Settings</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/admin">Admin Dashboard</NavDropdown.Item>
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
               </NavDropdown>

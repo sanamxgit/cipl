@@ -9,30 +9,19 @@ class Database {
     public $conn;
 
     public function getConnection() {
-        $this->conn = null;
-
         try {
+            error_log('Attempting database connection');
             $this->conn = new PDO(
                 "mysql:host=" . $this->host . ";dbname=" . $this->db_name,
                 $this->username,
                 $this->password
             );
-            $this->conn->exec("set names utf8");
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
-            if ($this->conn) {
-                error_log("Database connected successfully");
-            }
-            
+            error_log('Database connection successful');
             return $this->conn;
-        } catch(PDOException $exception) {
-            error_log("Connection error: " . $exception->getMessage());
-            http_response_code(500);
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Database connection failed'
-            ]);
-            return null;
+        } catch(PDOException $e) {
+            error_log('Database Connection Error: ' . $e->getMessage());
+            throw new Exception("Connection failed: " . $e->getMessage());
         }
     }
 }

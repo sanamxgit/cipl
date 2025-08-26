@@ -32,6 +32,21 @@ const BrandScroller = () => {
     }
   }, [brands]);
 
+  // New useEffect to handle auto-selection of brand ID 7 when coming from Adobe navigation
+  useEffect(() => {
+    // Check if we're coming from Adobe navigation (URL hash or sessionStorage)
+    const isFromAdobeNav = sessionStorage.getItem('selectAdobeBrand') === 'true';
+    if (isFromAdobeNav && brands.length > 0) {
+      // Find brand with ID 7
+      const brand7 = brands.find(brand => brand.id === 7);
+      if (brand7) {
+        setSelectedBrand(brand7);
+        // Clear the flag
+        sessionStorage.removeItem('selectAdobeBrand');
+      }
+    }
+  }, [brands]);
+
   useEffect(() => {
     if (selectedBrand) {
       fetchBrandProducts(selectedBrand.id);

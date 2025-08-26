@@ -13,10 +13,18 @@
 }
 
 .form-control {
-  border-radius: 20px;
+  border-radius: 12px 0 0 12px;
   padding-left: 1rem;
   width: 200px;
-  border: 1px solid #e2e8f0;
+  border: 2px solid #e2e8f0;
+  border-right: none;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #19668A;
+  box-shadow: 0 0 0 0.2rem rgba(25, 102, 138, 0.25);
+  border-right: none;
 }
 
 /* Fix Contact Us text wrapping */
@@ -35,19 +43,24 @@
 
 /* Search submit button styling */
 .search-submit-btn {
-  border-radius: 0 20px 20px 0;
+  border-radius: 0 12px 12px 0;
   border-left: none;
   padding: 0.375rem 0.75rem;
   transition: all 0.3s ease;
+  background: linear-gradient(135deg, #19668A, #0d4a6b);
+  border: 2px solid #19668A;
+  color: white;
 }
 
 .search-submit-btn:hover {
-  background-color: #19668A;
-  border-color: #19668A;
+  background: linear-gradient(135deg, #0d4a6b, #0a3a56);
+  border-color: #0d4a6b;
   color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(25, 102, 138, 0.3);
 }
 
 /* Adjust search form layout */
 .form-control + .search-submit-btn {
-  margin-left: -1px;
+  margin-left: -2px;
 } 

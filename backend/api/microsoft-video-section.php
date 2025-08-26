@@ -93,12 +93,6 @@ class MicrosoftVideoSection {
 
     private function fixVideoData($videoId) {
         try {
-            // Check if is_active column exists
-            $checkColumnQuery = "SHOW COLUMNS FROM microsoft_videos LIKE 'is_active'";
-            $checkColumnStmt = $this->conn->prepare($checkColumnQuery);
-            $checkColumnStmt->execute();
-            $hasIsActiveColumn = $checkColumnStmt->rowCount() > 0;
-            
             // Fix thumbnail_url if it's empty or just "0"
             $updateThumbnailSql = "
             UPDATE microsoft_videos 
@@ -119,17 +113,15 @@ class MicrosoftVideoSection {
             $stmt = $this->conn->prepare($updateVideoSql);
             $stmt->execute([$videoId]);
             
-            // Set is_active to 1 only if the column exists
-            if ($hasIsActiveColumn) {
-                $updateActiveSql = "
-                UPDATE microsoft_videos 
-                SET is_active = 1
-                WHERE id = ? AND (is_active = 0 OR is_active IS NULL)
-                ";
-                
-                $stmt = $this->conn->prepare($updateActiveSql);
-                $stmt->execute([$videoId]);
-            }
+            // Set is_active to 1
+            $updateActiveSql = "
+            UPDATE microsoft_videos 
+            SET is_active = 1
+            WHERE id = ? AND (is_active = 0 OR is_active IS NULL)
+            ";
+            
+            $stmt = $this->conn->prepare($updateActiveSql);
+            $stmt->execute([$videoId]);
             
             error_log("Video data fixed for ID: " . $videoId);
             
@@ -189,19 +181,8 @@ class MicrosoftVideoSection {
 
     public function createVideoData($data) {
         try {
-            // Check if is_active column exists
-            $checkColumnQuery = "SHOW COLUMNS FROM microsoft_videos LIKE 'is_active'";
-            $checkColumnStmt = $this->conn->prepare($checkColumnQuery);
-            $checkColumnStmt->execute();
-            $hasIsActiveColumn = $checkColumnStmt->rowCount() > 0;
-            
-            if ($hasIsActiveColumn) {
-                $query = "INSERT INTO microsoft_videos (title, description, video_url, thumbnail_url, sort_order, is_active) 
-                         VALUES (:title, :description, :video_url, :thumbnail_url, :sort_order, :is_active)";
-            } else {
-                $query = "INSERT INTO microsoft_videos (title, description, video_url, thumbnail_url, sort_order) 
-                         VALUES (:title, :description, :video_url, :thumbnail_url, :sort_order)";
-            }
+            $query = "INSERT INTO microsoft_videos (title, description, video_url, thumbnail_url, sort_order) 
+                     VALUES (:title, :description, :video_url, :thumbnail_url, :sort_order)";
             
             $stmt = $this->conn->prepare($query);
             
@@ -216,11 +197,6 @@ class MicrosoftVideoSection {
             $stmt->bindParam(':video_url', $video_url);
             $stmt->bindParam(':thumbnail_url', $thumbnail_url);
             $stmt->bindParam(':sort_order', $sort_order);
-            
-            if ($hasIsActiveColumn) {
-                $is_active = 1;
-                $stmt->bindParam(':is_active', $is_active);
-            }
             
             return $stmt->execute();
         } catch (PDOException $e) {

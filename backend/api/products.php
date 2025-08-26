@@ -14,9 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../config/database.php';
 
-$database = new Database();
-$conn = $database->getConnection();
-
 class Products {
     private $conn;
     
@@ -55,9 +52,9 @@ class Products {
 
     public function addProduct($data) {
         try {
-            $this->conn->beginTransaction();
-
-            // Insert product
+            // Debug log
+            error_log("Adding product with data: " . print_r($data, true));
+            
             $query = "INSERT INTO products (
                 brand_id, name, description, image_url, price,
                 primary_button_text, secondary_button_text, is_active
@@ -82,24 +79,14 @@ class Products {
             $stmt->bindParam(':secondary_button_text', $data['secondary_button_text']);
             $stmt->bindParam(':is_active', $isActive, PDO::PARAM_BOOL);
             
-            $stmt->execute();
-            $productId = $this->conn->lastInsertId();
-
-            // If it's an Autodesk product and category is selected
-            if (isset($data['category_id']) && $data['category_id']) {
-                $stmt = $this->conn->prepare("
-                    INSERT INTO product_categories (product_id, category_id)
-                    VALUES (:product_id, :category_id)
-                ");
-                $stmt->bindParam(':product_id', $productId);
-                $stmt->bindParam(':category_id', $data['category_id']);
-                $stmt->execute();
+            $result = $stmt->execute();
+            
+            if (!$result) {
+                error_log("Database error: " . print_r($stmt->errorInfo(), true));
             }
-
-            $this->conn->commit();
-            return true;
+            
+            return $result;
         } catch (PDOException $e) {
-            $this->conn->rollBack();
             error_log("Database error in addProduct: " . $e->getMessage());
             throw new Exception("Database error: " . $e->getMessage());
         }
@@ -189,8 +176,7 @@ class Products {
                         price = :price,
                         primary_button_text = :primary_button_text,
                         secondary_button_text = :secondary_button_text,
-                        is_active = :is_active,
-                        updated_at = CURRENT_TIMESTAMP
+                        is_active = :is_active
                         WHERE id = :id";
                 
                 $stmt = $this->conn->prepare($query);
@@ -313,63 +299,46 @@ if ($method === 'GET') {
     }
 } else if ($method === 'POST') {
     try {
-        $input = json_decode(file_get_contents('php://input'), true);
-        error_log('Received input: ' . print_r($input, true));
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true);
         
-        // Start transaction
-        $conn->beginTransaction();
+        // Debug logging
+        error_log("Received POST data: " . print_r($data, true));
         
-        // Insert product
-        $stmt = $conn->prepare("
-            INSERT INTO products 
-            (brand_id, name, description, image_url, price, 
-             primary_button_text, secondary_button_text, is_active)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-        
-        $isActive = isset($input['is_active']) ? $input['is_active'] : true;
-        
-        $stmt->execute([
-            $input['brand_id'],
-            $input['name'],
-            $input['description'],
-            $input['image_url'],
-            $input['price'],
-            $input['primary_button_text'] ?? 'Plans & Pricing',
-            $input['secondary_button_text'] ?? 'Free Trial',
-            $isActive
-        ]);
-        
-        $productId = $conn->lastInsertId();
-        
-        // If it's an Autodesk product and category is selected, add category relationship
-        if ($input['category_id']) {
-            $stmt = $conn->prepare("
-                INSERT INTO product_categories (product_id, category_id)
-                VALUES (?, ?)
-            ");
-            $stmt->execute([$productId, $input['category_id']]);
+        // Validate required fields
+        $requiredFields = ['brand_id', 'name', 'image_url'];
+        foreach ($requiredFields as $field) {
+            if (!isset($data[$field]) || empty($data[$field])) {
+                throw new Exception("Missing required field: {$field}");
+            }
         }
         
-        $conn->commit();
+        // Ensure brand_id is numeric
+        if (!is_numeric($data['brand_id'])) {
+            throw new Exception("Invalid brand_id");
+        }
         
-        echo json_encode([
-            'status' => 'success',
-            'message' => 'Product added successfully',
-            'data' => [
-                'id' => $productId,
-                'name' => $input['name']
-            ]
-        ]);
+        // Set default values for optional fields
+        $data['description'] = $data['description'] ?? '';
+        $data['price'] = $data['price'] ?? 0;
+        $data['primary_button_text'] = $data['primary_button_text'] ?? 'Plans & Pricing';
+        $data['secondary_button_text'] = $data['secondary_button_text'] ?? 'Free Trial';
+        $data['is_active'] = $data['is_active'] ?? true;
+        
+        if ($products->addProduct($data)) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Product added successfully'
+            ]);
+        } else {
+            throw new Exception('Failed to add product');
+        }
     } catch (Exception $e) {
-        if ($conn) {
-            $conn->rollBack();
-        }
-        error_log('Error adding product: ' . $e->getMessage());
+        error_log("Error adding product: " . $e->getMessage());
         http_response_code(500);
         echo json_encode([
             'status' => 'error',
-            'message' => 'Failed to add product: ' . $e->getMessage()
+            'message' => $e->getMessage()
         ]);
     }
 }

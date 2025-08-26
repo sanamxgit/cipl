@@ -29,11 +29,20 @@
   vertical-align: middle;
   padding: 1rem;
   border-bottom: 1px solid #dee2e6;
+  position: relative;
 }
 
 .status-dropdown {
   min-width: 100px;
   text-align: center;
+  position: relative;
+}
+
+.status-dropdown .dropdown-menu {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: auto !important;
 }
 
 .status-badge {
@@ -80,10 +89,44 @@
 
 .dropdown-menu {
   min-width: 100px;
+  z-index: 9999 !important;
+  position: absolute !important;
+  transform: none !important;
+  margin-top: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  pointer-events: auto !important;
+}
+
+.dropdown-menu.show {
+  z-index: 9999 !important;
+  pointer-events: auto !important;
 }
 
 .dropdown-item.active {
   background-color: #19668A;
+}
+
+.dropdown-item {
+  z-index: 9999 !important;
+  position: relative;
+}
+
+.dropdown-item:hover {
+  background-color: #fbfbfb50 !important;
+  z-index: 9999 !important;
+}
+
+/* Ensure dropdown container has highest priority */
+.dropdown.show {
+  z-index: 9999 !important;
+  position: relative;
+}
+
+.dropdown.show .dropdown-menu {
+  z-index: 9999 !important;
+  position: absolute !important;
 }
 
 .spinner-border {
@@ -100,6 +143,16 @@
   background-color: #f8f9fa !important;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Prevent hover effects when dropdown is open */
+.quotation-row.dropdown-open {
+  z-index: 1;
+}
+
+.quotation-row.dropdown-open:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 /* Modal styles */
@@ -155,4 +208,25 @@
   .detail-item strong {
     min-width: 100px;
   }
+}
+
+/* Dropdown positioning fixes */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu.show {
+  display: block !important;
+  z-index: 1050 !important;
+}
+
+/* Ensure dropdown doesn't get cut off by table overflow */
+.table-responsive {
+  overflow: visible !important;
+}
+
+/* Status column specific styling */
+.table td:nth-child(7) {
+  position: relative;
+  overflow: visible;
 } 

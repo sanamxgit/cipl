@@ -1,36 +1,25 @@
 <?php
-// Remove all headers first
-header_remove();
-
-// Set CORS headers ONCE
-if (!headers_sent()) {
-    header('Access-Control-Allow-Origin: http://localhost:3000');
-    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
-    header('Access-Control-Allow-Credentials: true');
-    header('Content-Type: application/json; charset=UTF-8');
+// Clear any existing headers
+if (function_exists('header_remove')) {
+    header_remove();
 }
+
+// Set headers once
+header('Access-Control-Allow-Origin: http://localhost:3000');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
+header('Content-Type: application/json; charset=UTF-8');
 
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
-    exit();
+    exit(0);
 }
+
+// Make sure no other code is setting headers
+ob_start();
 
 require_once '../config/database.php';
-
-// Initialize database connection
-$database = new Database();
-$db = $database->getConnection();
-
-if (!$db) {
-    http_response_code(500);
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Database connection failed'
-    ]);
-    exit();
-}
 
 class CarouselSlides {
     private $conn;
@@ -121,49 +110,44 @@ class CarouselSlides {
 }
 
 // Handle requests
+$database = new Database();
+$db = $database->getConnection();
 $carouselSlides = new CarouselSlides($db);
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-switch($method) {
-    case 'GET':
-        try {
-            $slides = $carouselSlides->getSlides();
+try {
+    if ($method === 'GET') {
+        error_log('Fetching carousel slides');
+        $stmt = $db->prepare("
+            SELECT * FROM carousel_slides 
+            WHERE is_active = 1 
+            ORDER BY position ASC
+        ");
+        $stmt->execute();
+        $slides = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        error_log('Found slides: ' . print_r($slides, true));
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => $slides
+        ]);
+    }
+
+    if ($method === 'POST') {
+        $data = json_decode(file_get_contents('php://input'), true);
+        if($carouselSlides->addSlide($data)) {
             echo json_encode([
                 'status' => 'success',
-                'data' => $slides
+                'message' => 'Slide created successfully'
             ]);
-        } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Failed to fetch slides',
-                'error' => $e->getMessage()
-            ]);
+        } else {
+            throw new Exception('Failed to create slide');
         }
-        break;
-        
-    case 'POST':
-        try {
-            $data = json_decode(file_get_contents('php://input'), true);
-            if($carouselSlides->addSlide($data)) {
-                echo json_encode([
-                    'status' => 'success',
-                    'message' => 'Slide created successfully'
-                ]);
-            } else {
-                throw new Exception('Failed to create slide');
-            }
-        } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
-        }
-        break;
-        
-    case 'DELETE':
+    }
+
+    if ($method === 'DELETE') {
         $id = isset($_GET['id']) ? $_GET['id'] : null;
         if($id && $carouselSlides->deleteSlide($id)) {
             echo json_encode([
@@ -177,9 +161,9 @@ switch($method) {
                 'message' => 'Failed to delete slide'
             ]);
         }
-        break;
-        
-    case 'PUT':
+    }
+
+    if ($method === 'PUT') {
         $id = isset($_GET['id']) ? $_GET['id'] : null;
         if ($id) {
             try {
@@ -228,6 +212,14 @@ switch($method) {
                 'message' => 'Missing slide ID'
             ]);
         }
-        break;
+    }
+} catch (Exception $e) {
+    error_log('Error in carousel-slides.php: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Internal server error',
+        'debug' => DEBUG ? $e->getMessage() : null
+    ]);
 }
 ?> 
