@@ -18,9 +18,10 @@ const MicrosoftOffice = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [pageResponse, productsResponse] = await Promise.all([
+        const [pageResponse, productsResponse, featuresResponse] = await Promise.all([
           api.get('/microsoft-office.php'),
-          api.get(`/microsoft-office.php?category=${activeCategory}`)
+          api.get('/microsoft-products.php'),
+          api.get('/microsoft-features.php')
         ]);
 
         if (pageResponse.data.status === 'success') {
@@ -28,8 +29,11 @@ const MicrosoftOffice = () => {
         }
 
         if (productsResponse.data.status === 'success') {
-          setProducts(productsResponse.data.data.products || []);
-          setFeatures(productsResponse.data.data.features || []);
+          setProducts(productsResponse.data.data || []);
+        }
+
+        if (featuresResponse.data.status === 'success') {
+          setFeatures(featuresResponse.data.data || []);
         }
       } catch (error) {
         console.error('Error loading Microsoft Office data:', error);
@@ -57,7 +61,13 @@ const MicrosoftOffice = () => {
   return (
     <div className="microsoft-office-page">
       {/* Video Section */}
-      <MicrosoftVideoSection videoData={pageData?.video_section} />
+      <MicrosoftVideoSection 
+        videoData={{
+          video_url: pageData?.video_url,
+          video_title: pageData?.video_title,
+          video_description: pageData?.video_description
+        }} 
+      />
 
       {/* Category Tabs */}
       <div className="category-tabs">

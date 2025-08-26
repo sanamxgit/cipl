@@ -72,34 +72,33 @@ const MicrosoftOfficeManager = () => {
     try {
       const response = await axios.get('/microsoft-office.php');
       if (response.data.status === 'success') {
-        const data = response.data.data;
-        
-        // Ensure plans structure
-        const plans = {
-          home: {
-            title: 'For Home',
-            cards: []
-          },
-          business: {
-            title: 'For Business',
-            cards: []
-          },
-          ...data.plans
+        const data = response.data.data || {};
+
+        const normalizedPlans = {
+          home: { title: 'For Home', cards: [] },
+          business: { title: 'For Business', cards: [] },
+          ...(data.plans || {})
         };
 
-        // Merge the fetched data with default structure
-        const mergedData = {
-          ...formData,
-          ...data,
-          plans,
-          // Ensure video fields are included
+        // Build form state directly from API response, mapping backend keys to frontend keys
+        const next = {
+          title: data.title || '',
+          subtitle: data.subtitle || '',
+          banner_image: data.banner_image || '',
+          isImageUrl: (data.is_image_url ?? 0) == 1,
+          main_heading: data.main_heading || '',
+          main_description: data.main_description || '',
+          floating_icons: data.floating_icons || [],
+          plans: normalizedPlans,
+          microsoftLogo: data.microsoft_logo || '/images/microsoft-logo.png',
           video_title: data.video_title || '',
           video_description: data.video_description || '',
           video_url: data.video_url || '',
-          video_thumbnail_url: data.video_thumbnail_url || ''
+          video_thumbnail_url: data.video_thumbnail_url || '',
+          features: data.features || []
         };
 
-        setFormData(mergedData);
+        setFormData(next);
       }
     } catch (error) {
       console.error('Error fetching page data:', error);

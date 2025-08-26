@@ -5,33 +5,63 @@
 }
 
 .product-plans {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
   margin: 2rem 0;
 }
 
 .plan-card {
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
+  border: 2px solid #dee2e6;
+  border-radius: 12px;
   padding: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-align: center;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.plan-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .plan-card.selected {
   border-color: #0d6efd;
-  background-color: #f8f9fa;
+  background-color: #e7f3ff;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
 }
 
-.plan-card h3 {
-  font-size: 1.1rem;
+.plan-card h6 {
+  font-size: 1rem;
   margin-bottom: 0.5rem;
+  color: #333;
 }
 
 .plan-card .price {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #19668A;
   margin: 0;
+}
+
+.selection-indicator {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+}
+
+.plan-card.selected .selection-indicator {
+  color: #0d6efd;
+  font-weight: 500;
+}
+
+.selected-products {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.product-image {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 } 

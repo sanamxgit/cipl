@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Row, Col, Table } from 'react-bootstrap';
-import axios from 'axios';
+import axios from '../../config/axios';
 import Preview from '../components/Preview';
 import Footer from '../../components/Footer';
 
@@ -31,7 +31,7 @@ const FooterManager = () => {
 
   const fetchFooterItems = async () => {
     try {
-      const response = await axios.get('/backend/api/footer-content.php');
+      const response = await axios.get('/footer-content.php');
       if (response.data.status === 'success') {
         setFooterItems(response.data.data);
       }
@@ -43,7 +43,7 @@ const FooterManager = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = `/backend/api/footer-content.php${editMode ? `?id=${selectedItem.id}` : ''}`;
+      const endpoint = `/footer-content.php${editMode ? `?id=${selectedItem.id}` : ''}`;
       const method = editMode ? 'put' : 'post';
       
       const response = await axios({
@@ -79,7 +79,7 @@ const FooterManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this footer item?')) {
       try {
-        await axios.delete(`/backend/api/footer-content.php?id=${id}`);
+        await axios.delete(`/footer-content.php?id=${id}`);
         await fetchFooterItems();
       } catch (error) {
         console.error('Error deleting footer item:', error);
@@ -90,7 +90,7 @@ const FooterManager = () => {
 
   const handleToggleStatus = async (item) => {
     try {
-      const response = await axios.put(`/backend/api/footer-content.php?id=${item.id}`, {
+      const response = await axios.put(`/footer-content.php?id=${item.id}`, {
         ...item,
         is_active: !item.is_active
       });

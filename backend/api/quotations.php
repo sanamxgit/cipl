@@ -1,8 +1,18 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, GET, PUT, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+// Start output buffering to prevent unwanted output
+ob_start();
+
+// Load CORS helper if present; otherwise set minimal CORS headers inline
+if (file_exists(__DIR__ . '/cors.php')) {
+    require_once __DIR__ . '/cors.php';
+    setCorsHeaders();
+} else {
+    header('Access-Control-Allow-Origin: http://localhost:3000');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, X-Requested-With, Authorization');
+    header('Access-Control-Allow-Credentials: true');
+    header('Content-Type: application/json; charset=UTF-8');
+}
 
 require_once __DIR__ . '/../config/database.php';
 
@@ -24,10 +34,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Debug input
         error_log('Received input: ' . print_r($input, true));
+        
+        // Check if input is valid
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception('Invalid JSON: ' . json_last_error_msg());
+        }
+
+        // Test mode - if test parameter is present, return success without database operation
+        if (isset($input['test']) && $input['test'] === true) {
+            http_response_code(200);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Test quotation submitted successfully',
+                'id' => 999,
+                'test_mode' => true
+            ]);
+            exit;
+        }
 
         // Validate required fields
         if (empty($input['fullName']) || empty($input['email']) || empty($input['phoneNumber'])) {
             throw new Exception('Required fields are missing');
+        }
+
+        // Check if quotations table exists
+        $tableCheck = $conn->prepare("SHOW TABLES LIKE 'quotations'");
+        $tableCheck->execute();
+        if (!$tableCheck->fetch()) {
+            throw new Exception('Quotations table does not exist. Please run the database setup.');
         }
 
         // Insert into database
@@ -56,21 +90,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->execute($params);
 
         if ($result) {
-            echo json_encode([
+            $quotationId = $conn->lastInsertId();
+            
+            // Clear any previous output
+            if (ob_get_length()) ob_clean();
+            
+            // Set proper headers
+            http_response_code(200);
+            header('Content-Type: application/json; charset=UTF-8');
+            
+            $response = [
                 'status' => 'success',
-                'message' => 'Quotation submitted successfully'
-            ]);
+                'message' => 'Quotation submitted successfully',
+                'id' => $quotationId
+            ];
+            
+            echo json_encode($response);
+            exit; // Ensure no additional output
         } else {
             $error = $stmt->errorInfo();
+            error_log('Database error details: ' . print_r($error, true));
             throw new Exception('Database error: ' . $error[2]);
         }
     } catch (Exception $e) {
         error_log('Error in quotations.php: ' . $e->getMessage());
+        
+        // Clear any previous output
+        if (ob_get_length()) ob_clean();
+        
+        // Set proper headers
         http_response_code(500);
-        echo json_encode([
+        header('Content-Type: application/json; charset=UTF-8');
+        
+        $response = [
             'status' => 'error',
             'message' => $e->getMessage()
-        ]);
+        ];
+        
+        echo json_encode($response);
+        exit; // Ensure no additional output
     }
 }
 
@@ -88,8 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 product_name,
                 message,
                 status,
-                created_at,
-                updated_at
+                created_at
             FROM quotations 
             ORDER BY created_at DESC
         ");
@@ -119,15 +176,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         error_log('PUT request data: ' . print_r($data, true));
 
         // Validate the status value
-        if (!in_array($data['status'], ['pending', 'done'])) {
+        if (!in_array($data['status'], ['pending', 'contacted', 'completed'])) {
             throw new Exception('Invalid status value');
         }
 
         $stmt = $conn->prepare("
             UPDATE quotations 
             SET 
-                status = :status,
-                updated_at = CURRENT_TIMESTAMP
+                status = :status
             WHERE id = :id
         ");
         

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Button, Tab, Tabs, Row, Col, ListGroup } from 'react-bootstrap';
-import axios from 'axios';
+import { Card, Form, Button, Tab, Tabs, Row, Col } from 'react-bootstrap';
+import axios from '../../config/axios';
 import { toast } from 'react-toastify';
 import AutodeskPage from '../../components/AutodeskPage';
 
@@ -24,24 +24,17 @@ const AutodeskManager = () => {
   const [loading, setLoading] = useState(true);
   const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
   const [editingFaq, setEditingFaq] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [selectedProducts, setSelectedProducts] = useState([]);
-  const [availableProducts, setAvailableProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [categoryProducts, setCategoryProducts] = useState({});
 
   useEffect(() => {
     fetchAllData();
-    fetchCategories();
-    fetchAvailableProducts();
   }, []);
 
   const fetchAllData = async () => {
     try {
       const [pageResponse, faqsResponse, productsResponse] = await Promise.all([
-        axios.get('/backend/api/autodesk-page.php'),
-        axios.get('/backend/api/autodesk-faqs.php'),
-        axios.get('/backend/api/products.php?brand=autodesk')
+        axios.get('/autodesk-page.php'),
+        axios.get('/autodesk-faqs.php'),
+        axios.get('/autodesk-products.php')
       ]);
 
       if (pageResponse.data.status === 'success') {
@@ -61,59 +54,7 @@ const AutodeskManager = () => {
     }
   };
 
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get('/backend/api/autodesk-categories.php');
-      if (response.data.status === 'success') {
-        setCategories(response.data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
 
-  const fetchAvailableProducts = async () => {
-    try {
-      const response = await axios.get('/backend/api/products.php?brand=autodesk');
-      if (response.data.status === 'success') {
-        setAvailableProducts(response.data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
-  };
-
-  const handleCategorySelect = async (categoryId) => {
-    setSelectedCategory(categoryId);
-    try {
-      const response = await axios.get(`/backend/api/autodesk-products.php?category=${categoryId}`);
-      if (response.data.status === 'success') {
-        setSelectedProducts(response.data.data);
-        setCategoryProducts(prev => ({
-          ...prev,
-          [categoryId]: response.data.data
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching category products:', error);
-      toast.error('Failed to fetch category products');
-    }
-  };
-
-  const handleProductAssignment = async (productIds) => {
-    try {
-      await axios.post('/backend/api/autodesk-categories.php', {
-        action: 'assign_products',
-        category_id: selectedCategory,
-        product_ids: productIds
-      });
-      toast.success('Products assigned successfully');
-      handleCategorySelect(selectedCategory); // Refresh products list
-    } catch (error) {
-      console.error('Error assigning products:', error);
-      toast.error('Failed to assign products');
-    }
-  };
 
   const handleFeaturedProductsChange = (selectedProducts) => {
     setPageData(prev => ({
@@ -124,7 +65,7 @@ const AutodeskManager = () => {
 
   const handlePageDataUpdate = async () => {
     try {
-      const response = await axios.post('/backend/api/autodesk-page.php', {
+      const response = await axios.post('/autodesk-page.php', {
         action: 'update',
         data: pageData
       });
@@ -145,7 +86,7 @@ const AutodeskManager = () => {
     }
 
     try {
-      const response = await axios.post('/backend/api/autodesk-faqs.php', {
+      const response = await axios.post('/autodesk-faqs.php', {
         action: 'add',
         question: newFaq.question,
         answer: newFaq.answer,
@@ -165,7 +106,7 @@ const AutodeskManager = () => {
 
   const handleUpdateFaq = async (faq) => {
     try {
-      const response = await axios.post('/backend/api/autodesk-faqs.php', {
+      const response = await axios.post('/autodesk-faqs.php', {
         action: 'update',
         id: faq.id,
         question: faq.question,
@@ -186,7 +127,7 @@ const AutodeskManager = () => {
 
   const handleFaqDelete = async (faqId) => {
     try {
-      const response = await axios.post('/backend/api/autodesk-faqs.php', {
+      const response = await axios.post('/autodesk-faqs.php', {
         action: 'delete',
         id: faqId
       });
@@ -416,54 +357,7 @@ const AutodeskManager = () => {
               </Card>
             </Tab>
 
-            <Tab eventKey="categories" title="Categories">
-              <Card>
-                <Card.Header>Manage Categories</Card.Header>
-                <Card.Body>
-                  <Row>
-                    <Col md={4}>
-                      <h5>Categories</h5>
-                      <ListGroup>
-                        {categories.map(category => (
-                          <ListGroup.Item 
-                            key={category.id}
-                            action
-                            active={selectedCategory === category.id}
-                            onClick={() => handleCategorySelect(category.id)}
-                          >
-                            {category.name}
-                          </ListGroup.Item>
-                        ))}
-                      </ListGroup>
-                    </Col>
-                    
-                    <Col md={8}>
-                      {selectedCategory && (
-                        <>
-                          <h5>Assign Products</h5>
-                          <Form>
-                            {availableProducts.map(product => (
-                              <Form.Check
-                                key={product.id}
-                                type="checkbox"
-                                label={product.name}
-                                checked={selectedProducts.some(p => p.id === product.id)}
-                                onChange={(e) => {
-                                  const newSelection = e.target.checked
-                                    ? [...selectedProducts, product]
-                                    : selectedProducts.filter(p => p.id !== product.id);
-                                  handleProductAssignment(newSelection.map(p => p.id));
-                                }}
-                              />
-                            ))}
-                          </Form>
-                        </>
-                      )}
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Tab>
+            
           </Tabs>
         </Col>
         
@@ -477,33 +371,7 @@ const AutodeskManager = () => {
         </Col>
       </Row>
 
-      <div className="mt-4">
-        <h5>Products by Category</h5>
-        <div className="products-preview">
-          {categories.map(category => (
-            <div key={category.id} className="category-products mb-4">
-              <h6>{category.name}</h6>
-              <div className="row">
-                {categoryProducts[category.id]?.map(product => (
-                  <div key={product.id} className="col-md-4 mb-3">
-                    <div className="card">
-                      <img 
-                        src={product.image_url} 
-                        className="card-img-top" 
-                        alt={product.name}
-                        style={{ height: '150px', objectFit: 'cover' }}
-                      />
-                      <div className="card-body">
-                        <h6 className="card-title">{product.name}</h6>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      
     </div>
   );
 };

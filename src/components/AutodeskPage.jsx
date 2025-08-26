@@ -142,7 +142,7 @@ const AutodeskPage = ({ previewData }) => {
           >
             All Products
           </button>
-          {categories.map(category => (
+          {/* {categories.map(category => (
             <button 
               key={category.id}
               className={`category-btn ${activeCategory === category.id ? 'active' : ''}`}
@@ -153,7 +153,7 @@ const AutodeskPage = ({ previewData }) => {
             >
               {category.name}
             </button>
-          ))}
+          ))} */}
         </div>
       </div>
 
