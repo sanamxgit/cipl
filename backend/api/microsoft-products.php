@@ -30,13 +30,13 @@ class MicrosoftProducts {
             // Get products with Microsoft brand using the correct table structure
             $stmt = $this->conn->prepare("
                 SELECT p.*, b.name as brand_name
-                FROM products p
+            FROM products p
                 JOIN brands b ON p.brand_id = b.id
-                WHERE b.name = 'Microsoft'
+            WHERE b.name = 'Microsoft'
                 ORDER BY p.position, p.created_at DESC
-            ");
-            
-            $stmt->execute();
+        ");
+        
+        $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Database error: " . $e->getMessage());
@@ -132,11 +132,11 @@ switch($method) {
     case 'GET':
         try {
             $result = $microsoftProducts->getProducts();
-            echo json_encode([
-                'status' => 'success',
+        echo json_encode([
+            'status' => 'success',
                 'data' => $result
-            ]);
-        } catch (Exception $e) {
+        ]);
+    } catch (Exception $e) {
             http_response_code(500);
             echo json_encode([
                 'status' => 'error',
@@ -196,9 +196,9 @@ switch($method) {
                     throw new Exception('Invalid action');
             }
         } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'status' => 'error',
+        http_response_code(500);
+        echo json_encode([
+            'status' => 'error',
                 'message' => $e->getMessage()
             ]);
         }

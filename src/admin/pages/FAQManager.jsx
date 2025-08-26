@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Row, Col, Table } from 'react-bootstrap';
 import api from '../../utils/api';
+import './FAQManager.css';
 
 const FAQManager = () => {
   const [faqs, setFaqs] = useState([]);

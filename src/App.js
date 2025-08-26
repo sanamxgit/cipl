@@ -33,6 +33,7 @@ import MicrosoftOfficeManager from './admin/pages/MicrosoftOfficeManager';
 import AutodeskManager from './admin/pages/AutodeskManager';
 import AutodeskPage from './components/AutodeskPage';
 import Quotations from './admin/pages/Quotations';
+import MicrosoftOffice from './components/MicrosoftOffice';
 
 
 const ProtectedRoute = ({ children }) => {
@@ -88,7 +89,7 @@ function App() {
               <Footer />
             </>
           } />
-          <Route path="/products/microsoft" element={<ProductCategoryView />} />
+          <Route path="/products/microsoft" element={<MicrosoftOffice />} />
           <Route path="/products/autodesk" element={<AutodeskPage />} />
           <Route path="/products/:slug" element={<ProductView />} />
           <Route path="/products/:category" element={<ProductCategoryView />} />
@@ -108,7 +109,7 @@ function App() {
                   <Route path="footer" element={<FooterManager />} />
                   <Route path="product-categories" element={<ProductCategoryManager />} />
                   <Route path="microsoft-office" element={<MicrosoftOfficeManager />} />
-                  <Route path="autodesk" element={<AutodeskManager />} />``
+                  <Route path="autodesk" element={<AutodeskManager />} />
                 </Routes>
               </AdminLayout>
             </ProtectedRoute>

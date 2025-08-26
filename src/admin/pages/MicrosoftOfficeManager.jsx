@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Form, Button, Tab, Tabs } from 'react-bootstrap';
 import axios from '../../config/axios';
 import LivePreview from '../components/LivePreview';
+import './MicrosoftOfficeManager.css';
 
 const formStyles = {
   input: {
@@ -61,44 +62,56 @@ const MicrosoftOfficeManager = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [features, setFeatures] = useState([]);
   const [editingFeatures, setEditingFeatures] = useState({});
+  const [faqs, setFaqs] = useState([]);
+  const [editingFaq, setEditingFaq] = useState(null);
+  const [newFaq, setNewFaq] = useState({
+    question: '',
+    answer: '',
+    sort_order: 0,
+    is_active: true
+  });
 
   useEffect(() => {
     fetchPageData();
     fetchProducts();
     fetchFeatures();
+    fetchFAQs();
   }, []);
 
   const fetchPageData = async () => {
     try {
       const response = await axios.get('/microsoft-office.php');
       if (response.data.status === 'success') {
-        const data = response.data.data || {};
-
-        const normalizedPlans = {
-          home: { title: 'For Home', cards: [] },
-          business: { title: 'For Business', cards: [] },
-          ...(data.plans || {})
+        const data = response.data.data;
+        
+        // Ensure plans structure
+        const plans = {
+          home: {
+            title: 'For Home',
+            cards: []
+          },
+          business: {
+            title: 'For Business',
+            cards: []
+          },
+          ...data.plans
         };
 
-        // Build form state directly from API response, mapping backend keys to frontend keys
-        const next = {
-          title: data.title || '',
-          subtitle: data.subtitle || '',
-          banner_image: data.banner_image || '',
-          isImageUrl: (data.is_image_url ?? 0) == 1,
-          main_heading: data.main_heading || '',
-          main_description: data.main_description || '',
-          floating_icons: data.floating_icons || [],
-          plans: normalizedPlans,
-          microsoftLogo: data.microsoft_logo || '/images/microsoft-logo.png',
-          video_title: data.video_title || '',
-          video_description: data.video_description || '',
-          video_url: data.video_url || '',
-          video_thumbnail_url: data.video_thumbnail_url || '',
-          features: data.features || []
+        // Merge the fetched data with default structure
+        // Map first backend video (if any) to editable fields for the Video tab
+        const firstVideo = (data.videos && data.videos.length > 0) ? data.videos[0] : null;
+
+        const mergedData = {
+          ...formData,
+          ...data,
+          plans,
+          video_title: firstVideo?.title || '',
+          video_description: firstVideo?.description || '',
+          video_url: firstVideo?.video_url || '',
+          video_thumbnail_url: firstVideo?.thumbnail_url || ''
         };
 
-        setFormData(next);
+        setFormData(mergedData);
       }
     } catch (error) {
       console.error('Error fetching page data:', error);
@@ -127,22 +140,113 @@ const MicrosoftOfficeManager = () => {
     }
   };
 
+  const fetchFAQs = async () => {
+    try {
+      const response = await axios.get('/microsoft-faqs.php?admin=true');
+      if (response.data.status === 'success') {
+        setFaqs(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching FAQs:', error);
+    }
+  };
+
+  const handleAddFAQ = () => {
+    if (!newFaq.question.trim() || !newFaq.answer.trim()) {
+      alert('Please fill in both question and answer fields');
+      return;
+    }
+
+    axios.post('/microsoft-faqs.php', newFaq)
+      .then(response => {
+        if (response.data.status === 'success') {
+          setNewFaq({ question: '', answer: '', sort_order: 0, is_active: true });
+          fetchFAQs();
+          alert('FAQ added successfully!');
+        }
+      })
+      .catch(error => {
+        console.error('Error adding FAQ:', error);
+        alert('Failed to add FAQ');
+      });
+  };
+
+  const handleEditFAQ = (faq) => {
+    setEditingFaq(faq);
+  };
+
+  const handleUpdateFAQ = async (faq) => {
+    try {
+      const response = await axios.put(`/microsoft-faqs.php?id=${faq.id}`, faq);
+      if (response.data.status === 'success') {
+        setEditingFaq(null);
+        fetchFAQs();
+        alert('FAQ updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating FAQ:', error);
+      alert('Failed to update FAQ');
+    }
+  };
+
+  const handleDeleteFAQ = async (id) => {
+    if (window.confirm('Are you sure you want to delete this FAQ?')) {
+      try {
+        await axios.delete(`/microsoft-faqs.php?id=${id}`);
+        fetchFAQs();
+        alert('FAQ deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting FAQ:', error);
+        alert('Failed to delete FAQ');
+      }
+    }
+  };
+
+  const handleToggleFAQStatus = async (faq) => {
+    try {
+      const response = await axios.put(`/microsoft-faqs.php?id=${faq.id}`, {
+        ...faq,
+        is_active: !faq.is_active
+      });
+      if (response.data.status === 'success') {
+        setFaqs(faqs.map(f => 
+          f.id === faq.id 
+            ? { ...f, is_active: !f.is_active }
+            : f
+        ));
+      }
+    } catch (error) {
+      console.error('Error toggling FAQ status:', error);
+      alert('Failed to update FAQ status');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log('Submitting video data:', {
-        video_title: formData.video_title,
-        video_description: formData.video_description,
-        video_url: formData.video_url,
-        video_thumbnail_url: formData.video_thumbnail_url
-      });
+      // Submit only page fields (General + Plans)
+      const {
+        title,
+        subtitle,
+        banner_image,
+        isImageUrl,
+        main_heading,
+        main_description,
+        floating_icons,
+        plans,
+        microsoftLogo
+      } = formData;
 
       const response = await axios.post('/microsoft-office.php', {
-        ...formData,
-        video_title: formData.video_title,
-        video_description: formData.video_description,
-        video_url: formData.video_url,
-        video_thumbnail_url: formData.video_thumbnail_url
+        title,
+        subtitle,
+        banner_image,
+        isImageUrl,
+        main_heading,
+        main_description,
+        floating_icons,
+        plans,
+        microsoftLogo
       });
 
       if (response.data.status === 'success') {
@@ -1181,6 +1285,180 @@ const MicrosoftOfficeManager = () => {
                           </Button>
                         </div>
                       ))}
+                    </Card.Body>
+                  </Card>
+                </Tab>
+
+                <Tab eventKey="faqs" title="FAQs">
+                  <Card>
+                    <Card.Body>
+                      <h5 className="mb-4">Microsoft 365 FAQs</h5>
+                      
+                      {/* Add New FAQ Form */}
+                      <Card className="mb-4">
+                        <Card.Header>
+                          <h6 className="mb-0">Add New FAQ</h6>
+                        </Card.Header>
+                        <Card.Body>
+                          <Row>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>Question</Form.Label>
+                                <Form.Control
+                                  as="textarea"
+                                  rows={2}
+                                  value={newFaq.question}
+                                  onChange={(e) => setNewFaq({...newFaq, question: e.target.value})}
+                                  placeholder="Enter the question"
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                              <Form.Group className="mb-3">
+                                <Form.Label>Sort Order</Form.Label>
+                                <Form.Control
+                                  type="number"
+                                  value={newFaq.sort_order}
+                                  onChange={(e) => setNewFaq({...newFaq, sort_order: parseInt(e.target.value)})}
+                                  placeholder="0"
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Answer</Form.Label>
+                            <Form.Control
+                              as="textarea"
+                              rows={4}
+                              value={newFaq.answer}
+                              onChange={(e) => setNewFaq({...newFaq, answer: e.target.value})}
+                              placeholder="Enter the answer"
+                            />
+                          </Form.Group>
+                          <Form.Group className="mb-3">
+                            <Form.Check
+                              type="checkbox"
+                              label="Active"
+                              checked={newFaq.is_active}
+                              onChange={(e) => setNewFaq({...newFaq, is_active: e.target.checked})}
+                            />
+                          </Form.Group>
+                          <Button 
+                            variant="primary"
+                            onClick={handleAddFAQ}
+                          >
+                            Add FAQ
+                          </Button>
+                        </Card.Body>
+                      </Card>
+
+                      {/* Existing FAQs List */}
+                      <div className="faqs-list">
+                        {faqs.map((faq) => (
+                          <Card key={faq.id} className="mb-3">
+                            <Card.Body>
+                              {editingFaq && editingFaq.id === faq.id ? (
+                                <div>
+                                  <Form.Group className="mb-3">
+                                    <Form.Label>Question</Form.Label>
+                                    <Form.Control
+                                      as="textarea"
+                                      rows={2}
+                                      value={editingFaq.question}
+                                      onChange={(e) => setEditingFaq({...editingFaq, question: e.target.value})}
+                                    />
+                                  </Form.Group>
+                                  <Form.Group className="mb-3">
+                                    <Form.Label>Answer</Form.Label>
+                                    <Form.Control
+                                      as="textarea"
+                                      rows={4}
+                                      value={editingFaq.answer}
+                                      onChange={(e) => setEditingFaq({...editingFaq, answer: e.target.value})}
+                                    />
+                                  </Form.Group>
+                                  <Row>
+                                    <Col md={6}>
+                                      <Form.Group className="mb-3">
+                                        <Form.Label>Sort Order</Form.Label>
+                                        <Form.Control
+                                          type="number"
+                                          value={editingFaq.sort_order}
+                                          onChange={(e) => setEditingFaq({...editingFaq, sort_order: parseInt(e.target.value)})}
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={6}>
+                                      <Form.Group className="mb-3">
+                                        <Form.Check
+                                          type="checkbox"
+                                          label="Active"
+                                          checked={editingFaq.is_active}
+                                          onChange={(e) => setEditingFaq({...editingFaq, is_active: e.target.checked})}
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                  </Row>
+                                  <div className="d-flex gap-2">
+                                    <Button 
+                                      variant="success" 
+                                      size="sm"
+                                      onClick={() => handleUpdateFAQ(editingFaq)}
+                                    >
+                                      Save
+                                    </Button>
+                                    <Button 
+                                      variant="secondary" 
+                                      size="sm"
+                                      onClick={() => setEditingFaq(null)}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div>
+                                  <div className="d-flex justify-content-between align-items-start mb-2">
+                                    <div className="flex-grow-1">
+                                      <h6 className="mb-2">{faq.question}</h6>
+                                      <p className="text-muted mb-2">{faq.answer}</p>
+                                      <div className="d-flex gap-3 text-muted small">
+                                        <span>Sort: {faq.sort_order}</span>
+                                        <span className={`badge ${faq.is_active ? 'bg-success' : 'bg-secondary'}`}>
+                                          {faq.is_active ? 'Active' : 'Inactive'}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="d-flex gap-2">
+                                      <Button 
+                                        variant="outline-primary" 
+                                        size="sm"
+                                        onClick={() => handleEditFAQ(faq)}
+                                      >
+                                        Edit
+                                      </Button>
+                                      <Button 
+                                        variant={faq.is_active ? 'outline-warning' : 'outline-success'} 
+                                        size="sm"
+                                        onClick={() => handleToggleFAQStatus(faq)}
+                                      >
+                                        {faq.is_active ? 'Deactivate' : 'Activate'}
+                                      </Button>
+                                      <Button 
+                                        variant="outline-danger" 
+                                        size="sm"
+                                        onClick={() => handleDeleteFAQ(faq.id)}
+                                      >
+                                        Delete
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </Card.Body>
+                          </Card>
+                        ))}
+                      </div>
                     </Card.Body>
                   </Card>
                 </Tab>

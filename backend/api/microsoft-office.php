@@ -108,58 +108,51 @@ try {
             }
         }
         
-        // Only page updates (no explicit action) – allow partial updates
+        // Only validate page fields if not handling video actions
         if (!isset($input['action'])) {
+            // Treat as full page update only; ignore any incidental video_* fields
+
+            // Validate presence of required keys (allow empty strings)
+            $requiredFields = ['title', 'subtitle', 'main_heading', 'main_description', 'plans'];
+            foreach ($requiredFields as $field) {
+                if (!array_key_exists($field, $input)) {
+                    throw new Exception("Field '$field' is required");
+                }
+            }
+
             try {
                 $conn->beginTransaction();
 
-                // Ensure base row exists
-                $conn->exec("INSERT IGNORE INTO microsoft_office_page (id) VALUES (1)");
+                $sql = "INSERT INTO microsoft_office_page 
+                    (id, title, subtitle, banner_image, is_image_url, main_heading, 
+                    main_description, floating_icons, plans, microsoft_logo) 
+                    VALUES (1, :title, :subtitle, :banner_image, :is_image_url, :main_heading,
+                    :main_description, :floating_icons, :plans, :microsoft_logo)
+                    ON DUPLICATE KEY UPDATE
+                    title = VALUES(title),
+                    subtitle = VALUES(subtitle),
+                    banner_image = VALUES(banner_image),
+                    is_image_url = VALUES(is_image_url),
+                    main_heading = VALUES(main_heading),
+                    main_description = VALUES(main_description),
+                    floating_icons = VALUES(floating_icons),
+                    plans = VALUES(plans),
+                    microsoft_logo = VALUES(microsoft_logo)";
 
-                // Map acceptable input keys to DB columns and transformers
-                $fieldMap = [
-                    'title' => ['col' => 'title'],
-                    'subtitle' => ['col' => 'subtitle'],
-                    'banner_image' => ['col' => 'banner_image'],
-                    'isImageUrl' => ['col' => 'is_image_url', 'transform' => fn($v) => $v ? 1 : 0],
-                    'main_heading' => ['col' => 'main_heading'],
-                    'main_description' => ['col' => 'main_description'],
-                    'floating_icons' => ['col' => 'floating_icons', 'transform' => fn($v) => json_encode($v ?? [])],
-                    'plans' => ['col' => 'plans', 'transform' => fn($v) => json_encode($v ?? [])],
-                    'microsoftLogo' => ['col' => 'microsoft_logo'],
-                    'video_title' => ['col' => 'video_title'],
-                    'video_description' => ['col' => 'video_description'],
-                    'video_url' => ['col' => 'video_url'],
-                    'video_thumbnail_url' => ['col' => 'video_thumbnail_url']
+                $stmt = $conn->prepare($sql);
+
+                $params = [
+                    ':title' => (string)($input['title'] ?? ''),
+                    ':subtitle' => (string)($input['subtitle'] ?? ''),
+                    ':banner_image' => (string)($input['banner_image'] ?? ''),
+                    ':is_image_url' => !empty($input['isImageUrl']) ? 1 : 0,
+                    ':main_heading' => (string)($input['main_heading'] ?? ''),
+                    ':main_description' => (string)($input['main_description'] ?? ''),
+                    ':floating_icons' => json_encode($input['floating_icons'] ?? []),
+                    ':plans' => json_encode($input['plans'] ?? []),
+                    ':microsoft_logo' => (string)($input['microsoftLogo'] ?? '/images/microsoft-logo.png')
                 ];
 
-                $updateParts = [];
-                $params = [];
-
-                foreach ($fieldMap as $inputKey => $info) {
-                    if (array_key_exists($inputKey, $input)) {
-                        $col = $info['col'];
-                        $val = $input[$inputKey];
-                        if (isset($info['transform']) && is_callable($info['transform'])) {
-                            $val = $info['transform']($val);
-                        }
-                        $updateParts[] = "$col = :$col";
-                        $params[":$col"] = $val;
-                    }
-                }
-
-                if (empty($updateParts)) {
-                    // Nothing to update
-                    $conn->commit();
-                    echo json_encode([
-                        'status' => 'success',
-                        'message' => 'No changes provided'
-                    ]);
-                    exit;
-                }
-
-                $sql = "UPDATE microsoft_office_page SET " . implode(', ', $updateParts) . " WHERE id = 1";
-                $stmt = $conn->prepare($sql);
                 $result = $stmt->execute($params);
 
                 if (!$result) {
@@ -168,27 +161,9 @@ try {
 
                 $conn->commit();
 
-                // Return the latest state
-                $fetch = $conn->prepare("SELECT * FROM microsoft_office_page WHERE id = 1");
-                $fetch->execute();
-                $latest = $fetch->fetch(PDO::FETCH_ASSOC);
-
-                if ($latest) {
-                    $latest['floating_icons'] = isset($latest['floating_icons']) ? (json_decode($latest['floating_icons'], true) ?? []) : [];
-                    $latest['plans'] = isset($latest['plans']) ? (json_decode($latest['plans'], true) ?? [
-                        'home' => ['title' => 'For Home', 'cards' => []],
-                        'business' => ['title' => 'For Business', 'cards' => []]
-                    ]) : [
-                        'home' => ['title' => 'For Home', 'cards' => []],
-                        'business' => ['title' => 'For Business', 'cards' => []]
-                    ];
-                    $latest['features'] = isset($latest['features']) ? (json_decode($latest['features'], true) ?? []) : [];
-                }
-
                 echo json_encode([
                     'status' => 'success',
-                    'message' => 'Page updated successfully',
-                    'data' => $latest
+                    'message' => 'Page updated successfully'
                 ]);
 
             } catch (PDOException $e) {
@@ -217,22 +192,30 @@ try {
                 ];
                 $data['features'] = isset($data['features']) ? (json_decode($data['features'], true) ?? []) : [];
 
-                // Clean and validate video URL
-                if (!empty($data['video_url'])) {
-                    $data['video_url'] = filter_var(trim($data['video_url']), FILTER_SANITIZE_URL);
-                    
-                    // Verify if URL is accessible and get content type
-                    $headers = get_headers($data['video_url'], 1);
-                    if ($headers) {
-                        error_log('Content-Type: ' . ($headers['Content-Type'] ?? 'unknown'));
-                    }
-                }
+                // Build a normalized response shape expected by the frontend
+                $normalized = [
+                    'id' => $data['id'] ?? null,
+                    'title' => $data['title'] ?? '',
+                    'subtitle' => $data['subtitle'] ?? '',
+                    'banner_image' => $data['banner_image'] ?? '',
+                    'is_image_url' => (string)($data['is_image_url'] ?? '0'),
+                    'main_heading' => $data['main_heading'] ?? '',
+                    'main_description' => $data['main_description'] ?? '',
+                    'floating_icons' => $data['floating_icons'],
+                    'plans' => $data['plans'],
+                    // map snake_case to camelCase for frontend
+                    'microsoftLogo' => $data['microsoft_logo'] ?? '',
+                    'created_at' => $data['created_at'] ?? null,
+                    'updated_at' => $data['updated_at'] ?? null,
+                    // Videos array loaded from videos table
+                    'videos' => [],
+                    'features' => $data['features']
+                ];
 
-                error_log('Processed video data: ' . json_encode([
-                    'video_url' => $data['video_url'] ?? null,
-                    'video_title' => $data['video_title'] ?? '',
-                    'video_description' => $data['video_description'] ?? ''
-                ]));
+                // Load videos from dedicated table
+                $normalized['videos'] = getMicrosoftVideos();
+
+                $data = $normalized;
             }
 
             echo json_encode([

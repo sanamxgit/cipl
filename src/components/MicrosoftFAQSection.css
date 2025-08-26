@@ -1,0 +1,104 @@
+.microsoft-faq-section {
+  padding: 80px 0;
+  background: #fff;
+}
+
+.microsoft-faq-section h2 {
+  text-align: center;
+  color: #0F172A;
+  font-size: 2.5rem;
+  margin-bottom: 50px;
+  font-weight: 600;
+}
+
+.microsoft-faq-section p {
+  text-align: center;
+  color: #64748B;
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.microsoft-faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.microsoft-faq-item {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.microsoft-faq-question {
+  width: 100%;
+  text-align: left;
+  padding: 20px;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid #eee;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #0F172A;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.microsoft-faq-question:hover {
+  background: #f8f9fa;
+}
+
+.microsoft-faq-question-text {
+  flex: 1;
+  margin-right: 20px;
+  line-height: 1.5;
+}
+
+.microsoft-faq-icon {
+  margin-left: 20px;
+  transition: transform 0.3s ease;
+  color: #0F172A;
+}
+
+.microsoft-faq-item.active .microsoft-faq-icon {
+  transform: rotate(180deg);
+}
+
+.microsoft-faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  background: #fff;
+}
+
+.microsoft-faq-item.active .microsoft-faq-answer {
+  max-height: 500px;
+}
+
+.microsoft-faq-answer-content {
+  padding: 20px;
+  color: #64748B;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .microsoft-faq-section {
+    padding: 60px 0;
+  }
+
+  .microsoft-faq-section h2 {
+    font-size: 2rem;
+    margin-bottom: 40px;
+  }
+
+  .microsoft-faq-question {
+    font-size: 1rem;
+    padding: 15px;
+  }
+}

@@ -204,58 +204,107 @@
 
 /* FAQ Styles */
 .faq-section {
-  padding: 4rem 0;
+  padding: 80px 0;
   background: #fff;
 }
 
-.faq-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 20px;
+.faq-section h2 {
+  text-align: center;
+  color: #0F172A;
+  font-size: 2.5rem;
+  margin-bottom: 50px;
+  font-weight: 600;
 }
 
-.faq-title {
-  text-align: center;
-  margin-bottom: 3rem;
-  color: #333;
+.faq-grid {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .faq-item {
-  border-bottom: 1px solid #e0e0e0;
-  margin-bottom: 0;
-}
-
-.faq-item:first-child {
-  border-top: 1px solid #e0e0e0;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .faq-question {
-  padding: 1.5rem 0;
+  width: 100%;
+  text-align: left;
+  padding: 20px;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid #eee;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #0F172A;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+  background: #f8f9fa;
 }
 
 .faq-question h3 {
   margin: 0;
   font-size: 1.1rem;
-  color: #333;
+  color: #0F172A;
   font-weight: 500;
+  flex: 1;
+  margin-right: 20px;
+}
+
+.arrow {
+  margin-left: 20px;
+  transition: transform 0.3s ease;
+  color: #0F172A;
+  font-size: 1.2rem;
+}
+
+.arrow.active {
+  transform: rotate(180deg);
 }
 
 .faq-answer {
   max-height: 0;
   overflow: hidden;
-  transition: all 0.3s ease;
-  background: transparent;
-  color: #666;
+  transition: max-height 0.3s ease-out;
+  background: #fff;
 }
 
 .faq-answer.active {
   max-height: 500px;
-  padding: 0 0 1.5rem 0;
+}
+
+.faq-answer p {
+  padding: 20px;
+  color: #64748B;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* FAQ Responsive Design */
+@media (max-width: 768px) {
+  .faq-section {
+    padding: 60px 0;
+  }
+
+  .faq-section h2 {
+    font-size: 2rem;
+    margin-bottom: 40px;
+  }
+
+  .faq-question {
+    font-size: 1rem;
+    padding: 15px;
+  }
+  
+  .faq-answer p {
+    padding: 15px;
+  }
 }
 
 .primary-btn:hover {
